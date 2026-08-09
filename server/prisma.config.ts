@@ -7,6 +7,8 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
+    // FIXED: Register the seed script inside the configuration file for Prisma 7
+    seed: "node ./prisma/seed.js", 
   },
   datasource: {
     url: process.env.DIRECT_URL || process.env.DATABASE_URL,

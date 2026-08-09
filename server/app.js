@@ -5,18 +5,32 @@ import cookieParser from "cookie-parser";
 import {prisma} from "./config/prisma.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { AppError } from "./errors/custom.error.js";
+import authRoutes from './routes/auth.routes.js'
+import quizRoutes from "./routes/quiz.routes.js";
+
 dotenv.config();
 
 const app = express();
-app.use(cookieParser());
 
-const PORT = process.env.PORT || 10000;
+app.use(cookieParser());
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  if (!req.body) req.body = {};
+  next();
+});
+
+const PORT = process.env.PORT || 10000;
 
 app.get('/', (req, res) => {
     res.send(`Server is Healthy and running with no errors on port : ${PORT}`);
 });
+
+// Mount the authentication routing pipelines
+app.use('/api/v1/auth', authRoutes);
+
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/admin', quizRoutes); // Secure admin operations mapping space
 
 // temporary test for database connection
 app.get("/api/test", async (req, res) => {

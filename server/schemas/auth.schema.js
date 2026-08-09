@@ -8,3 +8,10 @@ export const registerSchema = z.object({
         role : z.enum(["ADMIN", "USER"]).optional() // Fallback handled by DB Default
     })
 });
+
+export const loginSchema = z.object({
+    body : z.object({
+        email: z.string().email("Please provide a valid email address"),
+        password: z.string().min(6, "Password must be at least 6 characters long")
+    })
+});

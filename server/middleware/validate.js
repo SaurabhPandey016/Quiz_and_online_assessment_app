@@ -8,15 +8,15 @@ export const validate = (schema) => (req, res, next) => {
   });
 
   if (!result.success) {
-    // Compile and combine multiple Zod payload structural validation errors cleanly
-    const errorMessages = result.error.errors
+    // FIXED: Safely access result.error.issues to extract error strings cleanly
+    const errorMessages = result.error.issues
       .map(err => `${err.path.join('.')} field: ${err.message}`)
       .join(' | ');
       
     return next(new AppError(errorMessages, 400));
   }
 
-  // Inject fully parsed, verified, and sanitized parameters directly into req.validated
+  // Bind the fully sanitized and typed parameters directly to the request object
   req.validated = result.data;
   next();
 };
