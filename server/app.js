@@ -7,6 +7,11 @@ import { errorHandler } from "./middleware/error.middleware.js";
 import { AppError } from "./errors/custom.error.js";
 import authRoutes from './routes/auth.routes.js'
 import quizRoutes from "./routes/quiz.routes.js";
+import questionRoutes from "./routes/question.routes.js";
+import analyticsRoutes from "./routes/analytics.routes.js";
+import studentRoutes from "./routes/student.routes.js";
+import sessionRoutes from "./routes/session.routes.js";
+import gradingRoutes from "./routes/grading.routes.js";
 
 dotenv.config();
 
@@ -31,6 +36,37 @@ app.use('/api/v1/auth', authRoutes);
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/admin', quizRoutes); // Secure admin operations mapping space
+
+// 2. Mount it below your previous endpoints:
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/admin', quizRoutes);
+app.use('/api/v1/admin/questions', questionRoutes); // Mount question route pipeline
+
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/admin', quizRoutes);
+app.use('/api/v1/admin/questions', questionRoutes);
+app.use('/api/v1/admin/analytics', analyticsRoutes); // Mount analytics router channel
+
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/admin', quizRoutes);
+app.use('/api/v1/admin/questions', questionRoutes);
+app.use('/api/v1/admin/analytics', analyticsRoutes);
+app.use('/api/v1/student', studentRoutes); // Mount student routing discovery pipeline
+
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/admin', quizRoutes);
+app.use('/api/v1/admin/questions', questionRoutes);
+app.use('/api/v1/admin/analytics', analyticsRoutes);
+app.use('/api/v1/student', studentRoutes);
+app.use('/api/v1/student/attempts', sessionRoutes); // Mount student live attempt session pipeline
+
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/admin', quizRoutes);
+app.use('/api/v1/admin/questions', questionRoutes);
+app.use('/api/v1/admin/analytics', analyticsRoutes);
+app.use('/api/v1/student', studentRoutes);
+app.use('/api/v1/student/attempts', sessionRoutes);
+app.use('/api/v1/student/grading', gradingRoutes); // Mount grading engine processing pipeline
 
 // temporary test for database connection
 app.get("/api/test", async (req, res) => {

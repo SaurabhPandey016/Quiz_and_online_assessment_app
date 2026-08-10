@@ -20,4 +20,15 @@ export const createQuizSchema = z.object({
     })
 });
 
-export const updateQuizSchema = createQuizSchema.partial();
+export const updateQuizSchema = z.object({
+    body: z.object({
+        title: z.string().min(3).optional(),
+        description: z.string().optional(),
+        categoryId: z.string().uuid().optional(),
+        difficulty: z.enum(["EASY", "MEDIUM", "HARD"]).optional(),
+        duration: z.number().int().positive().optional(),
+        passingScore: z.number().int().min(1).max(100).optional(),
+        maxAttempts: z.number().int().positive().optional(),
+        status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).optional()
+    })
+});
