@@ -45,34 +45,6 @@ app.get('/', (req, res) => {
 
 // Mount the authentication routing pipelines
 app.use('/api/v1/auth', authRoutes);
-
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/admin', quizRoutes); // Secure admin operations mapping space
-
-// 2. Mount it below your previous endpoints:
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/admin', quizRoutes);
-app.use('/api/v1/admin/questions', questionRoutes); // Mount question route pipeline
-
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/admin', quizRoutes);
-app.use('/api/v1/admin/questions', questionRoutes);
-app.use('/api/v1/admin/analytics', analyticsRoutes); // Mount analytics router channel
-
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/admin', quizRoutes);
-app.use('/api/v1/admin/questions', questionRoutes);
-app.use('/api/v1/admin/analytics', analyticsRoutes);
-app.use('/api/v1/student', studentRoutes); // Mount student routing discovery pipeline
-
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/admin', quizRoutes);
-app.use('/api/v1/admin/questions', questionRoutes);
-app.use('/api/v1/admin/analytics', analyticsRoutes);
-app.use('/api/v1/student', studentRoutes);
-app.use('/api/v1/student/attempts', sessionRoutes); // Mount student live attempt session pipeline
-
-app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/admin', quizRoutes);
 app.use('/api/v1/admin/questions', questionRoutes);
 app.use('/api/v1/admin/analytics', analyticsRoutes);

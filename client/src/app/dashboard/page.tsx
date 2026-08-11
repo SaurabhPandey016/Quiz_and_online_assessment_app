@@ -1,69 +1,269 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { apiClient } from '@/lib/api-client';
-import useRouter from 'next/navigation';
-import { useRouter as useNextRouter } from 'next/navigation';
 
-export default function QuizBoardPage() {
-  const router = useNextRouter();
+const difficultyOptions = [
+  { value: '', label: 'All Difficulty' },
+  { value: 'EASY', label: 'Easy' },
+  { value: 'MEDIUM', label: 'Medium' },
+  { value: 'HARD', label: 'Hard' },
+];
+
+export default function DashboardPage() {
   const [quizzes, setQuizzes] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [history, setHistory] = useState<any[]>([]);
+  const [leaderboard, setLeaderboard] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [filters, setFilters] = useState({
+    search: '',
+    categoryId: '',
+    difficulty: '',
+    minDuration: '',
+    maxDuration: '',
+  });
 
   useEffect(() => {
-    apiClient.get('/student/quizzes')
-      .then((res) => setQuizzes(res.data.data.quizzes))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+    const fetchDashboardData = async () => {
+      setLoading(true);
+      setError('');
 
-  if (loading) return <div className="text-slate-400 text-sm">Loading assessment modules...</div>;
-  if (error) return <div className="text-rose-400 text-sm">⚠️ Error: {error}</div>;
+      try {
+        const [quizzesRes, categoriesRes, historyRes, leaderboardRes] = await Promise.all([
+          apiClient.get('/student/quizzes', {
+            params: {
+              search: filters.search || undefined,
+              categoryId: filters.categoryId || undefined,
+              difficulty: filters.difficulty || undefined,
+              minDuration: filters.minDuration || undefined,
+              maxDuration: filters.maxDuration || undefined,
+            },
+          }),
+          apiClient.get('/student/categories'),
+          apiClient.get('/student/attempts/history'),
+          apiClient.get('/student/leaderboard'),
+        ]);
+
+        setQuizzes(quizzesRes.data.data.quizzes);
+        setCategories(categoriesRes.data.data.categories);
+        setHistory(historyRes.data.data.history);
+        setLeaderboard(leaderboardRes.data.data.leaderboard);
+      } catch (err: any) {
+        setError(err?.message || 'Unable to load the student dashboard.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [filters]);
+
+  const stats = useMemo(() => {
+    if (!history.length) return { attempted: 0, passed: 0, failed: 0, averageScore: 0, highestScore: 0 };
+
+    const passed = history.filter((item) => item.status === 'COMPLETED').length;
+    const failed = history.filter((item) => item.status === 'FAILED').length;
+    const scores = history.map((item) => item.percentage || 0);
+    const average = scores.length ? scores.reduce((acc, score) => acc + score, 0) / scores.length : 0;
+    const highest = scores.length ? Math.max(...scores) : 0;
+
+    return {
+      attempted: history.length,
+      passed,
+      failed,
+      averageScore: Number(average.toFixed(2)),
+      highestScore: Number(highest.toFixed(2)),
+    };
+  }, [history]);
+
+  if (loading) {
+    return (
+      <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-8 text-slate-400 shadow-lg shadow-slate-950/30">
+        Loading your student dashboard...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-3xl border border-rose-600/20 bg-rose-500/10 p-8 text-rose-200">
+        <strong>Unable to load dashboard:</strong> {error}
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">Available Assessments</h2>
-        <p className="text-slate-400 text-sm mt-1">Select an active module to initialize your testing session parameters.</p>
-      </div>
-
-      {quizzes.length === 0 ? (
-        <div className="p-8 border border-dashed border-slate-800 text-center text-slate-500 rounded-xl text-sm">
-          No live quizzes published yet.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {quizzes.map((quiz) => (
-            <div key={quiz.id} className="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col justify-between space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-slate-950 text-indigo-400 rounded-md">
-                    {quiz.category?.name || 'General'}
-                  </span>
-                  <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ${
-                    quiz.difficulty === 'EASY' ? 'bg-emerald-500/10 text-emerald-400' :
-                    quiz.difficulty === 'MEDIUM' ? 'bg-amber-500/10 text-amber-400' : 'bg-rose-500/10 text-rose-400'
-                  }`}>
-                    {quiz.difficulty}
-                  </span>
-                </div>
-                <h3 className="text-lg font-bold text-slate-100">{quiz.title}</h3>
-                <p className="text-xs text-slate-400 line-clamp-2">{quiz.description}</p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-500 font-medium">
-                <div>⏱️ {quiz.duration} Mins | 🎯 Pass: {quiz.passingScore}%</div>
-                <button
-                  onClick={() => router.push(`/dashboard/runner/${quiz.id}`)}
-                  className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-2 rounded-lg transition text-xs active:scale-[0.98]"
-                >
-                  Start Assessment
-                </button>
+    <div className="space-y-8">
+      <section className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
+        <div className="space-y-6">
+          <div className="rounded-[32px] border border-slate-800 bg-slate-900/80 p-8 shadow-xl shadow-slate-950/20">
+            <div className="flex items-start justify-between gap-6">
+              <div>
+                <p className="text-sm uppercase tracking-[0.26em] text-slate-500">Student Summary</p>
+                <h2 className="mt-2 text-3xl font-semibold text-slate-100">Welcome back to your learning center.</h2>
+                <p className="mt-3 max-w-2xl text-sm text-slate-400">
+                  Discover published quizzes, track progress, and view your recent performance history all in one place.
+                </p>
               </div>
             </div>
-          ))}
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {[
+                { label: 'Attempts', value: stats.attempted, tone: 'from-sky-500 to-violet-500' },
+                { label: 'Passed', value: stats.passed, tone: 'from-emerald-500 to-teal-500' },
+                { label: 'Average', value: `${stats.averageScore}%`, tone: 'from-fuchsia-500 to-violet-500' },
+                { label: 'Best Score', value: `${stats.highestScore}%`, tone: 'from-amber-500 to-orange-500' },
+              ].map((stat) => (
+                <div key={stat.label} className="rounded-3xl border border-slate-800 bg-slate-950/90 p-5 shadow-inner shadow-slate-950/10">
+                  <p className="text-xs uppercase tracking-[0.3em] text-slate-500">{stat.label}</p>
+                  <p className="mt-4 text-3xl font-semibold text-slate-100">{stat.value}</p>
+                  <div className={`mt-4 h-1 rounded-full bg-gradient-to-r ${stat.tone}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[32px] border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/10">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-100">Find your next quiz</h3>
+                <p className="text-sm text-slate-500">Search, filter, and choose the right assessment for your skills.</p>
+              </div>
+              <div className="grid w-full gap-3 sm:grid-cols-2 lg:w-auto lg:grid-cols-3">
+                <input
+                  type="text"
+                  value={filters.search}
+                  onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
+                  placeholder="Search quizzes"
+                  className="min-w-0 rounded-3xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                />
+                <select
+                  value={filters.categoryId}
+                  onChange={(e) => setFilters((prev) => ({ ...prev, categoryId: e.target.value }))}
+                  className="rounded-3xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+                <select
+                  value={filters.difficulty}
+                  onChange={(e) => setFilters((prev) => ({ ...prev, difficulty: e.target.value }))}
+                  className="rounded-3xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                >
+                  {difficultyOptions.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            {quizzes.length === 0 ? (
+              <div className="rounded-[32px] border border-dashed border-slate-800 bg-slate-900/80 p-10 text-center text-slate-500">
+                No published quizzes match the selected filters.
+              </div>
+            ) : (
+              quizzes.map((quiz) => (
+                <div key={quiz.id} className="rounded-[32px] border border-slate-800 bg-slate-950/95 p-6 shadow-xl shadow-slate-950/20">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.24em] text-slate-500">{quiz.category?.name || 'General'}</p>
+                      <h3 className="mt-2 text-xl font-semibold text-slate-100">{quiz.title}</h3>
+                      <p className="mt-2 text-sm leading-6 text-slate-400">{quiz.description || 'No description provided.'}</p>
+                    </div>
+                    <span className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] ${quiz.difficulty === 'EASY' ? 'bg-emerald-500/10 text-emerald-300' : quiz.difficulty === 'MEDIUM' ? 'bg-amber-500/10 text-amber-300' : 'bg-rose-500/10 text-rose-300'}`}>
+                      {quiz.difficulty}
+                    </span>
+                  </div>
+
+                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-3xl border border-slate-800 bg-slate-900/80 px-4 py-4 text-sm text-slate-400">
+                      <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Duration</p>
+                      <p className="mt-2 text-base text-slate-100">{quiz.duration} min</p>
+                    </div>
+                    <div className="rounded-3xl border border-slate-800 bg-slate-900/80 px-4 py-4 text-sm text-slate-400">
+                      <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Passing Score</p>
+                      <p className="mt-2 text-base text-slate-100">{quiz.passingScore}%</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="text-sm text-slate-400">{quiz._count?.questions || 0} questions • {quiz.maxAttempts} attempts allowed</div>
+                    <a
+                      href={`/dashboard/runner/${quiz.id}`}
+                      className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
+                    >
+                      Start Quiz
+                    </a>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
-      )}
+
+        <aside className="space-y-6">
+          <div className="rounded-[32px] border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/20">
+            <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Leaderboard</p>
+            <h3 className="mt-3 text-xl font-semibold text-slate-100">Top performers</h3>
+
+            {leaderboard.length === 0 ? (
+              <p className="mt-6 text-sm text-slate-500">No leaderboard data is available yet.</p>
+            ) : (
+              <div className="mt-6 space-y-4">
+                {leaderboard.map((entry, index) => (
+                  <div key={entry.userId} className="rounded-3xl border border-slate-800 bg-slate-950/90 p-4">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-semibold text-slate-100">{index + 1}. {entry.name}</p>
+                        <p className="text-xs text-slate-500">{entry.completedQuizzes} completed</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-semibold text-slate-100">{entry.averageScore.toFixed(0)}%</p>
+                        <p className="text-xs text-slate-500">Best {entry.highestScore.toFixed(0)}%</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-[32px] border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/20">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Attempt history</p>
+                <h3 className="mt-3 text-xl font-semibold text-slate-100">Recent scores</h3>
+              </div>
+            </div>
+
+            {history.length === 0 ? (
+              <p className="mt-6 text-sm text-slate-500">You have not taken any quizzes yet.</p>
+            ) : (
+              <div className="mt-6 space-y-3">
+                {history.slice(0, 5).map((item) => (
+                  <div key={item.id} className="rounded-3xl border border-slate-800 bg-slate-950/90 p-4">
+                    <div className="flex items-center justify-between gap-3 text-sm text-slate-400">
+                      <div>
+                        <p className="font-semibold text-slate-100">{item.quiz.title}</p>
+                        <p>{new Date(item.startedAt).toLocaleDateString()}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-slate-100">{item.percentage.toFixed(0)}%</p>
+                        <p className={item.status === 'COMPLETED' ? 'text-emerald-400' : 'text-rose-400'}>{item.status}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </aside>
+      </section>
     </div>
   );
 }
