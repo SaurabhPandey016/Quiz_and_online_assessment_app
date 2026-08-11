@@ -97,3 +97,18 @@ export const logout = (req, res) => {
         message : 'Logged out successfully'
     });
 };
+
+export const getMeProfile = async (req, res, next) => {
+  try {
+    // req.user is already loaded by our 'protect' middleware shield guard
+    const user = req.user;
+    user.password = undefined; // Strip hash parameter for safety
+    
+    res.status(200).json({
+      status: 'success',
+      data: { user }
+    });
+  } catch (error) {
+    next(error);
+  }
+};

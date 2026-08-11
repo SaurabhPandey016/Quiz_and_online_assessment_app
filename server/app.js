@@ -18,7 +18,19 @@ dotenv.config();
 const app = express();
 
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    // If no origin is provided (like Postman or mobile apps), allow it
+    if (!origin) return callback(null, true);
+    
+    // SMART MAGIC: This dynamically echoes back the incoming origin.
+    // It makes the server accept requests from ANY link or deployment domain!
+    callback(null, true);
+  },
+  credentials: true, // Crucial: Allows your secure HTTP-Only cookies to pass through safely
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+}));
 app.use(express.json());
 app.use((req, res, next) => {
   if (!req.body) req.body = {};
