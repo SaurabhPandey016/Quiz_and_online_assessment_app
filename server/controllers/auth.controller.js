@@ -2,6 +2,7 @@ import { AppError } from "../errors/custom.error.js"
 import { prisma } from "../config/prisma.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import crypto from "crypto"
 
 // helper to sign JWT token
 const sendTokenResponse = (user, statusCode, res) => {
@@ -28,9 +29,9 @@ const sendTokenResponse = (user, statusCode, res) => {
     user.password = undefined; // Remove password from response for security
 
     res.status(statusCode).json({
-        success: "success",
-        data : user,
-        token : token,
+        status: 'success',
+        data: { user },
+        token,
     });
 };
 
@@ -86,16 +87,88 @@ export const login = async (req, res, next) => {
 
 // logout logic;
 export const logout = (req, res) => {
-
     res.clearCookie('token', {
-        httpOnly : true,
-        secure : true, 
-        sameSite: 'none',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
     });
     res.status(200).json({
-        status : 'success', 
-        message : 'Logged out successfully'
+        status: 'success',
+        message: 'Logged out successfully'
     });
+};
+
+const createPasswordResetToken = () => {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    return { resetToken, hashedResetToken, expires };
+};
+
+export const forgotPassword = async (req, res, next) => {
+    try {
+        const { email } = req.validated.body;
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        if (!user) {
+            return res.status(200).json({
+                status: 'success',
+                message: 'If an account matches that email, a password reset token has been generated.'
+            });
+        }
+
+        const { resetToken, hashedResetToken, expires } = createPasswordResetToken();
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                passwordResetToken: hashedResetToken,
+                passwordResetExpires: expires
+            }
+        });
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Password reset token generated successfully.',
+            data: { resetToken }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const resetPassword = async (req, res, next) => {
+    try {
+        const { token, password } = req.validated.body;
+        const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+        const user = await prisma.user.findFirst({
+            where: {
+                passwordResetToken: hashedToken,
+                passwordResetExpires: {
+                    gt: new Date()
+                }
+            }
+        });
+
+        if (!user) {
+            return next(new AppError('Reset token is invalid or has expired.', 400));
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const updatedUser = await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                passwordResetToken: null,
+                passwordResetExpires: null
+            }
+        });
+
+        sendTokenResponse(updatedUser, 200, res);
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const getMeProfile = async (req, res, next) => {

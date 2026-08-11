@@ -16,7 +16,7 @@ export const createQuizSchema = z.object({
         duration: z.number().int().positive("Duration must be positive number in minutes"), 
         passingScore: z.number().int().min(1).max(100, "Passing score must be between 1% to 100%"), 
         maxAttempts: z.number().int().positive("Max attempts must be atleast 1."), 
-        status: z.enum(["DRAFT", "PUBLISHED", "ARCHIEVED"]).optional()
+        status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).optional()
     })
 });
 
@@ -30,5 +30,12 @@ export const updateQuizSchema = z.object({
         passingScore: z.number().int().min(1).max(100).optional(),
         maxAttempts: z.number().int().positive().optional(),
         status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).optional()
+    })
+});
+
+export const updateCategorySchema = z.object({
+    body: z.object({
+        name: z.string().min(2, "Category must be atleast 2 character long").optional(),
+        description: z.string().optional()
     })
 });

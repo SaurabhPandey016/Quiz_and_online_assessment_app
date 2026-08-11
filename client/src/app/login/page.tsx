@@ -8,16 +8,24 @@ import { siteBranding } from '@/lib/site-config';
 export default function LoginPage() {
   const { login, user } = useAuth();
   const router = useRouter();
-  
+  const [redirectPath, setRedirectPath] = useState('');
+
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errorMsg, setErrorMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect');
+    if (redirect) setRedirectPath(redirect);
+  }, []);
+
+  React.useEffect(() => {
     if (user) {
-      router.replace(user.role === 'ADMIN' ? '/admin' : '/dashboard');
+      const target = redirectPath.startsWith('/') ? redirectPath : user.role === 'ADMIN' ? '/admin' : '/dashboard';
+      router.replace(target);
     }
-  }, [user, router]);
+  }, [user, router, redirectPath]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +33,9 @@ export default function LoginPage() {
     setSubmitting(true);
 
     try {
-      await login(formData);
+      const user = await login(formData);
+      const target = redirectPath.startsWith('/') ? redirectPath : user?.role === 'ADMIN' ? '/admin' : '/dashboard';
+      router.replace(target);
     } catch (err: any) {
       setErrorMsg(err.message || 'Invalid email or password credentials.');
     } finally {
@@ -76,16 +86,21 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-3xl bg-linear-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/20 transition hover:brightness-110 disabled:opacity-60"
+            className="w-full rounded-3xl bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/20 transition hover:brightness-110 disabled:opacity-60"
           >
             {submitting ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-slate-400">
-          New to PulseQuiz?{' '}
-          <Link href="/register" className="font-semibold text-slate-100 hover:text-white">
-            Create an account
+        <div className="mt-6 flex flex-col gap-3 text-center text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            New to PulseQuiz?{' '}
+            <Link href="/register" className="font-semibold text-slate-100 hover:text-white">
+              Create an account
+            </Link>
+          </p>
+          <Link href="/forgot-password" className="font-semibold text-slate-100 hover:text-white">
+            Forgot password?
           </Link>
         </div>
       </div>

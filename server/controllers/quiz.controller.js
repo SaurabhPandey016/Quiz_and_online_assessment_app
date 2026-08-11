@@ -50,6 +50,22 @@ export const deleteCategory = async (req, res, next) => {
     }
 };
 
+export const updateCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.validated.body;
+
+    const category = await prisma.category.update({
+      where: { id },
+      data: updateData
+    });
+
+    res.status(200).json({ status: 'success', data: { category } });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Quiz ADMINISTRATIVE CRUD OPERATORS
 
 export const createQuiz = async (req, res, next) => {

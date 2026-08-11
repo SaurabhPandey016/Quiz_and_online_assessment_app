@@ -8,16 +8,24 @@ import { siteBranding } from '@/lib/site-config';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [redirectPath, setRedirectPath] = useState('');
   const { register, user } = useAuth();
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [errorMsg, setErrorMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect');
+    if (redirect) setRedirectPath(redirect);
+  }, []);
+
+  React.useEffect(() => {
     if (user) {
-      router.replace(user.role === 'ADMIN' ? '/admin' : '/dashboard');
+      const target = redirectPath.startsWith('/') ? redirectPath : user.role === 'ADMIN' ? '/admin' : '/dashboard';
+      router.replace(target);
     }
-  }, [user, router]);
+  }, [user, router, redirectPath]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,8 +33,9 @@ export default function RegisterPage() {
     setSubmitting(true);
 
     try {
-      await register({ ...formData, role: 'USER' });
-      router.push('/dashboard');
+      const user = await register({ ...formData, role: 'USER' });
+      const target = redirectPath.startsWith('/') ? redirectPath : user?.role === 'ADMIN' ? '/admin' : '/dashboard';
+      router.replace(target);
     } catch (err: any) {
       setErrorMsg(err.message || 'Unable to create your account. Please try again.');
     } finally {
@@ -91,7 +100,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-3xl bg-linear-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110 disabled:opacity-60"
+            className="w-full rounded-3xl bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110 disabled:opacity-60"
           >
             {submitting ? 'Creating account...' : 'Create account'}
           </button>

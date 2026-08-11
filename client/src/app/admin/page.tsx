@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { apiClient } from '@/lib/api-client';
 import AdminCharts from '@/components/admin-charts'; // Import our new chart component
@@ -18,6 +19,20 @@ interface ChartPayload {
   registrationTrends: Array<{ date: string; count: number }>;
   attemptTrends: Array<{ date: string; count: number }>;
   popularQuizzes: Array<{ title: string; attemptCount: number }>;
+}
+
+function LinkCard({ href, title, description }: { href: string; title: string; description: string }) {
+  return (
+    <Link
+      href={href}
+      className="group rounded-4xl border border-slate-800 bg-slate-900/90 p-6 transition hover:border-sky-500/40 hover:bg-slate-900"
+    >
+      <p className="text-xs uppercase tracking-[0.26em] text-slate-500">Admin Navigation</p>
+      <h2 className="mt-3 text-xl font-semibold text-slate-100 transition group-hover:text-sky-400">{title}</h2>
+      <p className="mt-2 text-sm text-slate-400">{description}</p>
+      <span className="mt-4 inline-flex rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-300 transition group-hover:bg-slate-700">Open</span>
+    </Link>
+  );
 }
 
 export default function AdminDashboard() {
@@ -56,6 +71,14 @@ export default function AdminDashboard() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-100">Platform Analytics Control Matrix</h1>
         <p className="text-slate-400 text-sm mt-1">Live metrics compiled from your Supabase PostgreSQL cluster variables.</p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <LinkCard href="/admin/users" title="Manage Users" description="Approve, block, or delete accounts." />
+        <LinkCard href="/admin/categories" title="Manage Categories" description="Create and organize quiz topics." />
+        <LinkCard href="/admin/quizzes" title="Manage Quizzes" description="Publish quizzes and control status." />
+        <LinkCard href="/admin/questions" title="Manage Questions" description="Add questions and correct answers." />
+        <LinkCard href="/admin" title="Analytics" description="Return to dashboard metrics overview." />
       </div>
 
       {/* Summary Scorecard Grid Cards Layout */}

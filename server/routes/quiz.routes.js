@@ -2,10 +2,10 @@ import { Router } from 'express';
 import { protect, restrictTo } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import { 
-  createCategory, getAllCategories, deleteCategory,
+  createCategory, getAllCategories, deleteCategory, updateCategory,
   createQuiz, getAllQuizzesAdmin, updateQuiz, deleteQuiz 
 } from '../controllers/quiz.controller.js';
-import { createCategorySchema, createQuizSchema, updateQuizSchema } from '../schemas/admin.schema.js';
+import { createCategorySchema, createQuizSchema, updateQuizSchema, updateCategorySchema } from '../schemas/admin.schema.js';
 
 const router = Router();
 
@@ -18,6 +18,7 @@ router.route('/categories')
   .get(getAllCategories); // Both Admin & Student roles can view categories
 
 router.delete('/categories/:id', restrictTo('ADMIN'), deleteCategory);
+router.patch('/categories/:id', restrictTo('ADMIN'), validate(updateCategorySchema), updateCategory);
 
 // --- QUIZ ADMINISTRATIVE ROUTES ---
 router.route('/quizzes')

@@ -6,9 +6,9 @@ import { apiClient } from '@/lib/api-client';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (payload: Record<string, string>) => Promise<void>;
-  register: (payload: Record<string, string>) => Promise<void>;
-  logout: () => Promise<void>;
+  login: (payload: Record<string, string>) => Promise<User>;
+  register: (payload: Record<string, string>) => Promise<User>;
+  logout: (redirectPath?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,11 +41,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkSession();
   }, []);
 
-  const login = async (payload: Record<string, string>) => {
+  const login = async (payload: Record<string, string>): Promise<User> => {
     setLoading(true);
     try {
       const res = await apiClient.post('/auth/login', payload);
-      setUser(res.data.data.user);
+      const userData: User = res.data.data.user;
+      setUser(userData);
+      return userData;
     } catch (error) {
       setUser(null);
       throw error;
@@ -54,11 +56,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (payload: Record<string, string>) => {
+  const register = async (payload: Record<string, string>): Promise<User> => {
     setLoading(true);
     try {
       const res = await apiClient.post('/auth/register', payload);
-      setUser(res.data.data.user);
+      const userData: User = res.data.data.user;
+      setUser(userData);
+      return userData;
     } catch (error) {
       setUser(null);
       throw error;
@@ -67,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const logout = async () => {
+  const logout = async (redirectPath = '/login') => {
     try {
       await apiClient.post('/auth/logout');
     } catch (err) {
@@ -75,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setUser(null);
       // Clean reload to login page resets all state reference markers
-      window.location.href = '/login';
+      window.location.href = redirectPath;
     }
   };
 

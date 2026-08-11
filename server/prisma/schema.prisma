@@ -42,6 +42,8 @@ model User {
   password String
   role Role @default(USER)
   status String @default("active")
+  passwordResetToken String? @map("password_reset_token")
+  passwordResetExpires DateTime? @map("password_reset_expires")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now())
   attempts Attempt[]

@@ -12,6 +12,7 @@ import analyticsRoutes from "./routes/analytics.routes.js";
 import studentRoutes from "./routes/student.routes.js";
 import sessionRoutes from "./routes/session.routes.js";
 import gradingRoutes from "./routes/grading.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 dotenv.config();
 
@@ -48,6 +49,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/admin', quizRoutes);
 app.use('/api/v1/admin/questions', questionRoutes);
 app.use('/api/v1/admin/analytics', analyticsRoutes);
+app.use('/api/v1/admin/users', userRoutes);
 app.use('/api/v1/student', studentRoutes);
 app.use('/api/v1/student/attempts', sessionRoutes);
 app.use('/api/v1/student/grading', gradingRoutes); // Mount grading engine processing pipeline

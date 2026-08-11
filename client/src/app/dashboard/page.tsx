@@ -118,7 +118,7 @@ export default function DashboardPage() {
                 <div key={stat.label} className="rounded-3xl border border-slate-800 bg-slate-950/90 p-5 shadow-inner shadow-slate-950/10">
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-500">{stat.label}</p>
                   <p className="mt-4 text-3xl font-semibold text-slate-100">{stat.value}</p>
-                  <div className={`mt-4 h-1 rounded-full bg-linear-to-r ${stat.tone}`} />
+                  <div className={`mt-4 h-1 rounded-full bg-gradient-to-r ${stat.tone}`} />
                 </div>
               ))}
             </div>
@@ -195,7 +195,7 @@ export default function DashboardPage() {
                     <div className="text-sm text-slate-400">{quiz._count?.questions || 0} questions • {quiz.maxAttempts} attempts allowed</div>
                     <a
                       href={`/dashboard/runner/${quiz.id}`}
-                      className="inline-flex items-center justify-center rounded-full bg-linear-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
+                      className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
                     >
                       Start Quiz
                     </a>
