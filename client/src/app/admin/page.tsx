@@ -22,15 +22,27 @@ interface ChartPayload {
 }
 
 function LinkCard({ href, title, description }: { href: string; title: string; description: string }) {
-  return (
-    <Link
-      href={href}
-      className="group rounded-4xl border border-slate-800 bg-slate-900/90 p-6 transition hover:border-sky-500/40 hover:bg-slate-900"
-    >
+  const isAnchor = href.startsWith('#');
+
+  const cardContent = (
+    <>
       <p className="text-xs uppercase tracking-[0.26em] text-slate-500">Admin Navigation</p>
       <h2 className="mt-3 text-xl font-semibold text-slate-100 transition group-hover:text-sky-400">{title}</h2>
       <p className="mt-2 text-sm text-slate-400">{description}</p>
       <span className="mt-4 inline-flex rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-300 transition group-hover:bg-slate-700">Open</span>
+    </>
+  );
+
+  const commonClassName =
+    'group block rounded-4xl border border-slate-800 bg-slate-900/90 p-6 transition duration-200 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900/95';
+
+  return isAnchor ? (
+    <a href={href} className={commonClassName}>
+      {cardContent}
+    </a>
+  ) : (
+    <Link href={href} className={commonClassName}>
+      {cardContent}
     </Link>
   );
 }
@@ -78,7 +90,7 @@ export default function AdminDashboard() {
         <LinkCard href="/admin/categories" title="Manage Categories" description="Create and organize quiz topics." />
         <LinkCard href="/admin/quizzes" title="Manage Quizzes" description="Publish quizzes and control status." />
         <LinkCard href="/admin/questions" title="Manage Questions" description="Add questions and correct answers." />
-        <LinkCard href="/admin" title="Analytics" description="Return to dashboard metrics overview." />
+        <LinkCard href="/admin#analytics" title="Analytics" description="Scroll to analytics metrics and charts." />
       </div>
 
       {/* Summary Scorecard Grid Cards Layout */}
@@ -101,11 +113,13 @@ export default function AdminDashboard() {
       </div>
 
       {/* RENDER THE CHART GRAPH SYSTEM INFRASTRUCTURE */}
-      <AdminCharts 
-        registrationTrends={chartsData.registrationTrends}
-        attemptTrends={chartsData.attemptTrends}
-        popularQuizzes={chartsData.popularQuizzes}
-      />
+      <section id="analytics" className="scroll-mt-24">
+        <AdminCharts 
+          registrationTrends={chartsData.registrationTrends}
+          attemptTrends={chartsData.attemptTrends}
+          popularQuizzes={chartsData.popularQuizzes}
+        />
+      </section>
     </div>
   );
 }

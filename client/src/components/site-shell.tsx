@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
-import { Hexagon, ShieldCheck, Trophy, BookOpen, LogOut } from 'lucide-react';
+import { Hexagon, ShieldCheck, Trophy, BookOpen, LogOut, Mail, Phone, ExternalLink } from 'lucide-react';
 import { siteBranding } from '../lib/site-config';
 
 const navItems = [
@@ -78,27 +78,72 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="pt-24">{children}</main>
+      <main className="pt-16">{children}</main>
 
-      <footer className="border-t border-slate-800/80 bg-slate-950/95 px-4 py-6 text-slate-400 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 text-xs sm:flex-row sm:items-center sm:justify-between sm:text-sm">
-          <p>© {new Date().getFullYear()} {siteBranding.productName}. {siteBranding.footerCredit}</p>
-          <div className="space-y-1 text-sm text-slate-400 sm:text-right">
-            <div>
-              <span className="font-semibold text-slate-100">Email:</span>{' '}
-              <a href={`mailto:${siteBranding.contacts.email}`} className="text-sky-300 hover:text-sky-200">{siteBranding.contacts.email}</a>
+      <footer className="border-t border-white/10 bg-[#020613]/95 px-6 py-10 text-slate-300 backdrop-blur-xl sm:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.5fr_1fr_1fr]">
+          <div className="space-y-4">
+            <div className="inline-flex rounded-full border border-cyan-300/20 bg-cyan-400/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-cyan-200 shadow-[0_0_20px_rgba(56,189,248,0.12)]">
+              Next-gen assessment hub
             </div>
-            <div>
-              <span className="font-semibold text-slate-100">LinkedIn:</span>{' '}
-              <a href={siteBranding.contacts.linkedin} target="_blank" rel="noreferrer" className="text-sky-300 hover:text-sky-200">{siteBranding.contacts.linkedinLabel}</a>
+            <h2 className="text-2xl font-semibold text-white">PulseQuiz is built for immersive learning, simplified admin control, and real-time insight.</h2>
+            <p className="max-w-xl text-sm leading-7 text-slate-400">
+              A modern quiz platform with student progress tracking, secure role-based navigation, and polished analytics wrapped in a premium dark UI.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-3xl border border-slate-800 bg-[#081229]/90 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Skill focus</p>
+                <p className="mt-2 text-sm text-slate-200">Quizzes, categories, students, and admin insights.</p>
+              </div>
+              <div className="rounded-3xl border border-slate-800 bg-[#081229]/90 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Design style</p>
+                <p className="mt-2 text-sm text-slate-200">Dark glassmorphism, vibrant gradients, and polished interface hierarchy.</p>
+              </div>
             </div>
-            <div>
-              <span className="font-semibold text-slate-100">GitHub:</span>{' '}
-              <a href={siteBranding.contacts.github} target="_blank" rel="noreferrer" className="text-sky-300 hover:text-sky-200">{siteBranding.contacts.githubLabel}</a>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-white">Quick links</h3>
+            <ul className="space-y-2 text-sm text-slate-400">
+              <li>
+                <a href="/dashboard" className="text-slate-200 transition hover:text-cyan-300">Student Dashboard</a>
+              </li>
+              <li>
+                <a href="/admin" className="text-slate-200 transition hover:text-cyan-300">Admin Hub</a>
+              </li>
+              <li>
+                <a href="/login" className="text-slate-200 transition hover:text-cyan-300">Secure Login</a>
+              </li>
+              <li>
+                <a href="/register" className="text-slate-200 transition hover:text-cyan-300">Create Account</a>
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-white">Contact & credits</h3>
+            <p className="text-sm text-slate-400">Need a demo or help extending the platform? Reach out anytime.</p>
+            <div className="rounded-3xl border border-slate-800 bg-[#081229]/90 p-4 text-sm text-slate-300">
+              <p className="font-semibold text-white">{siteBranding.productName}</p>
+              <p className="mt-2 text-slate-400">{siteBranding.footerCredit}</p>
             </div>
-            <div>
-              <span className="font-semibold text-slate-100">Contact:</span>{' '}
-              <a href={`tel:${siteBranding.contacts.phone}`} className="text-sky-300 hover:text-sky-200">{siteBranding.contacts.phone}</a>
+            <div className="space-y-2 text-sm text-slate-300">
+              <p className="inline-flex items-center gap-2">
+                <Mail className="h-4 w-4 text-cyan-300" />
+                <a href={`mailto:${siteBranding.contacts.email}`} className="text-cyan-300 hover:text-cyan-200">{siteBranding.contacts.email}</a>
+              </p>
+              <p className="inline-flex items-center gap-2">
+                <Phone className="h-4 w-4 text-cyan-300" />
+                <a href="tel:+918720026790" className="text-cyan-300 hover:text-cyan-200">+918720026790</a>
+              </p>
+              <p className="inline-flex items-center gap-2">
+                <ExternalLink className="h-4 w-4 text-cyan-300" />
+                <a href={siteBranding.contacts.github} target="_blank" rel="noreferrer" className="text-cyan-300 hover:text-cyan-200">{siteBranding.contacts.githubLabel}</a>
+              </p>
+              <p className="inline-flex items-center gap-2">
+                <ExternalLink className="h-4 w-4 text-cyan-300" />
+                <a href={siteBranding.contacts.linkedin} target="_blank" rel="noreferrer" className="text-cyan-300 hover:text-cyan-200">{siteBranding.contacts.linkedinLabel}</a>
+              </p>
             </div>
           </div>
         </div>
