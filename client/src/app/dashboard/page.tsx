@@ -97,7 +97,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <section className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
         <div className="space-y-6">
-          <div className="rounded-[32px] border border-slate-800 bg-slate-900/80 p-8 shadow-xl shadow-slate-950/20">
+          <div className="rounded-4xl border border-slate-800 bg-slate-900/80 p-8 shadow-xl shadow-slate-950/20">
             <div className="flex items-start justify-between gap-6">
               <div>
                 <p className="text-sm uppercase tracking-[0.26em] text-slate-500">Student Summary</p>
@@ -118,13 +118,13 @@ export default function DashboardPage() {
                 <div key={stat.label} className="rounded-3xl border border-slate-800 bg-slate-950/90 p-5 shadow-inner shadow-slate-950/10">
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-500">{stat.label}</p>
                   <p className="mt-4 text-3xl font-semibold text-slate-100">{stat.value}</p>
-                  <div className={`mt-4 h-1 rounded-full bg-gradient-to-r ${stat.tone}`} />
+                  <div className={`mt-4 h-1 rounded-full bg-linear-to-r ${stat.tone}`} />
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="rounded-[32px] border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/10">
+          <div className="rounded-4xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/10">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-slate-100">Find your next quiz</h3>
@@ -163,12 +163,12 @@ export default function DashboardPage() {
 
           <div className="grid gap-6 md:grid-cols-2">
             {quizzes.length === 0 ? (
-              <div className="rounded-[32px] border border-dashed border-slate-800 bg-slate-900/80 p-10 text-center text-slate-500">
+              <div className="rounded-4xl border border-dashed border-slate-800 bg-slate-900/80 p-10 text-center text-slate-500">
                 No published quizzes match the selected filters.
               </div>
             ) : (
               quizzes.map((quiz) => (
-                <div key={quiz.id} className="rounded-[32px] border border-slate-800 bg-slate-950/95 p-6 shadow-xl shadow-slate-950/20">
+                <div key={quiz.id} className="rounded-4xl border border-slate-800 bg-slate-950/95 p-6 shadow-xl shadow-slate-950/20">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-xs uppercase tracking-[0.24em] text-slate-500">{quiz.category?.name || 'General'}</p>
@@ -195,7 +195,7 @@ export default function DashboardPage() {
                     <div className="text-sm text-slate-400">{quiz._count?.questions || 0} questions • {quiz.maxAttempts} attempts allowed</div>
                     <a
                       href={`/dashboard/runner/${quiz.id}`}
-                      className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
+                      className="inline-flex items-center justify-center rounded-full bg-linear-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
                     >
                       Start Quiz
                     </a>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
         </div>
 
         <aside className="space-y-6">
-          <div className="rounded-[32px] border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/20">
+          <div className="rounded-4xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/20">
             <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Leaderboard</p>
             <h3 className="mt-3 text-xl font-semibold text-slate-100">Top performers</h3>
 
@@ -233,7 +233,7 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <div className="rounded-[32px] border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/20">
+          <div className="rounded-4xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/20">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Attempt history</p>

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
+import { siteBranding } from '@/lib/site-config';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -38,7 +39,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-lg rounded-4xl border border-slate-800 bg-slate-900/95 p-8 shadow-[0_28px_80px_-40px_rgba(15,23,42,0.9)]">
         <div className="text-center space-y-3">
           <p className="text-xs uppercase tracking-[0.28em] text-slate-500">Start your assessment journey</p>
-          <h1 className="text-3xl font-extrabold text-slate-100">Create your Labmentix account</h1>
+          <h1 className="text-3xl font-extrabold text-slate-100">Create your {siteBranding.productName} account</h1>
           <p className="text-sm text-slate-400">Register to take quizzes, track progress, and unlock student analytics.</p>
         </div>
 

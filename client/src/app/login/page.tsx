@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
+import { siteBranding } from '@/lib/site-config';
 
 export default function LoginPage() {
   const { login, user } = useAuth();
@@ -34,10 +35,10 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
-      <div className="w-full max-w-md rounded-[32px] border border-slate-800 bg-slate-900/95 p-8 shadow-[0_28px_80px_-40px_rgba(15,23,42,0.9)]">
+      <div className="w-full max-w-md rounded-4xl border border-slate-800 bg-slate-900/95 p-8 shadow-[0_28px_80px_-40px_rgba(15,23,42,0.9)]">
         <div className="text-center space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">Secure Portal</p>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-100">Sign in to Labmentix</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-100">Sign in to {siteBranding.productName}</h1>
           <p className="text-sm text-slate-400">Access quizzes, review results, and manage your learning experience.</p>
         </div>
 
@@ -75,14 +76,14 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-3xl bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/20 transition hover:brightness-110 disabled:opacity-60"
+            className="w-full rounded-3xl bg-linear-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/20 transition hover:brightness-110 disabled:opacity-60"
           >
             {submitting ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
         <div className="mt-6 text-center text-sm text-slate-400">
-          New to Labmentix?{' '}
+          New to PulseQuiz?{' '}
           <Link href="/register" className="font-semibold text-slate-100 hover:text-white">
             Create an account
           </Link>
