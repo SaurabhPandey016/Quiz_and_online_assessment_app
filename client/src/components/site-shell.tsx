@@ -17,32 +17,32 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className="min-h-screen text-slate-100"
+      className="min-h-screen text-[#eef7ff]"
       style={{
         backgroundImage:
-          'radial-gradient(circle at top left, rgba(124, 58, 237, 0.14), transparent 26%), ' +
-          'radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.12), transparent 30%), ' +
-          'linear-gradient(180deg, #070b1e 0%, #050816 45%, #0b1330 100%)',
+          'radial-gradient(circle at 10% 12%, rgba(94, 234, 212, 0.18), transparent 20%), ' +
+          'radial-gradient(circle at 82% 14%, rgba(129, 140, 248, 0.16), transparent 18%), ' +
+          'linear-gradient(180deg, #02030b 0%, #030613 40%, #060918 100%)',
       }}
     >
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-xl">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[#1a2c55]/70 bg-[#020613]/95 backdrop-blur-xl shadow-[0_18px_60px_-40px_rgba(12,20,44,0.9)]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 via-violet-600 to-cyan-400 shadow-lg shadow-slate-900/30">
-              <Hexagon className="h-5 w-5 text-slate-950" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300 via-violet-500 to-fuchsia-500 shadow-lg shadow-cyan-500/20">
+              <Hexagon className="h-5 w-5 text-[#020617]" />
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-500">{siteBranding.productTagline}</p>
-              <h1 className="text-lg font-semibold text-slate-100">{siteBranding.productName}</h1>
+              <p className="text-xs uppercase tracking-[0.3em] text-[#94a9c8]">{siteBranding.productTagline}</p>
+              <h1 className="text-lg font-semibold text-[#f4f8ff]">{siteBranding.productName}</h1>
             </div>
           </div>
 
           <nav className="hidden items-center gap-2 md:flex">
-            <Link href="/dashboard" className={pathname.startsWith('/dashboard') ? 'rounded-full bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-100 shadow-sm shadow-slate-900/40' : 'rounded-full px-4 py-2 text-sm text-slate-400 transition hover:bg-slate-900 hover:text-slate-100'}>
+            <Link href="/dashboard" className={pathname.startsWith('/dashboard') ? 'rounded-full bg-[#081229] px-4 py-2 text-sm font-semibold text-[#eef7ff] shadow-sm shadow-[#0d1640]/40' : 'rounded-full px-4 py-2 text-sm text-[#94a9c8] transition hover:bg-[#081229] hover:text-[#f8fbff]'}>
               Quizzes
             </Link>
             {user?.role === 'ADMIN' && (
-              <Link href="/admin" className={pathname === '/admin' ? 'rounded-full bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-100 shadow-sm shadow-slate-900/40' : 'rounded-full px-4 py-2 text-sm text-slate-400 transition hover:bg-slate-900 hover:text-slate-100'}>
+              <Link href="/admin" className={pathname === '/admin' ? 'rounded-full bg-[#081229] px-4 py-2 text-sm font-semibold text-[#eef7ff] shadow-sm shadow-[#0d1640]/40' : 'rounded-full px-4 py-2 text-sm text-[#94a9c8] transition hover:bg-[#081229] hover:text-[#f8fbff]'}>
                 Admin Dashboard
               </Link>
             )}
@@ -50,15 +50,15 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-3">
             {loading ? (
-              <div className="h-10 w-24 animate-pulse rounded-full bg-slate-800 shimmer" />
+              <div className="h-10 w-24 animate-pulse rounded-full bg-[#0b163a] shimmer" />
             ) : user ? (
               <>
-                <div className="hidden rounded-2xl border border-slate-800 bg-slate-900/90 px-4 py-2 text-xs text-slate-300 sm:block">
+                <div className="hidden rounded-2xl border border-[#1f3564] bg-[#071127]/90 px-4 py-2 text-xs text-[#94a9c8] sm:block">
                   {user.role} • {user.name}
                 </div>
                 <button
                   onClick={() => logout(`/login?redirect=${encodeURIComponent(pathname)}`)}
-                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-violet-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/20 transition hover:brightness-110"
+                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-500 px-4 py-2 text-sm font-semibold text-[#020617] shadow-lg shadow-cyan-500/20 transition hover:brightness-110"
                 >
                   <LogOut className="h-4 w-4" />
                   Logout
@@ -66,10 +66,10 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
               </>
             ) : (
               <div className="flex items-center gap-2">
-                <Link href="/login" className="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-100 transition hover:border-slate-500 hover:text-white">
+                <Link href="/login" className="rounded-full border border-[#334364] bg-[#081229] px-4 py-2 text-sm text-[#a8c7ef] transition hover:border-cyan-400/50 hover:text-white">
                   Login
                 </Link>
-                <Link href="/register" className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-slate-200">
+                <Link href="/register" className="rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-violet-500 px-4 py-2 text-sm font-semibold text-[#020617] transition hover:brightness-110">
                   Register
                 </Link>
               </div>

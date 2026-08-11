@@ -22,14 +22,14 @@ export default function AdminLayout({ children }: LayoutProps) {
 
   return (
     <AdminGuard>
-      <div className="min-h-screen bg-transparent text-slate-100">
-        <div className="border-b border-slate-800 bg-slate-950/90 backdrop-blur-xl">
+      <div className="min-h-screen bg-[#02030b] text-slate-100">
+        <div className="border-b border-[#1c2f5d] bg-[#020613]/95 backdrop-blur-xl shadow-[0_20px_80px_-40px_rgba(8,18,41,0.88)]">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-4 sm:px-6 lg:px-8">
             {adminLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition ${pathname === link.href ? 'bg-slate-800 text-slate-100' : 'text-slate-400 hover:bg-slate-900 hover:text-slate-100'}`}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${pathname === link.href ? 'bg-[#081229] text-[#eef7ff]' : 'text-[#94a9c8] hover:bg-[#081229] hover:text-[#f8fbff]'}`}
               >
                 {link.label}
               </Link>
@@ -37,7 +37,7 @@ export default function AdminLayout({ children }: LayoutProps) {
           </div>
         </div>
 
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
           {children}
         </main>
       </div>

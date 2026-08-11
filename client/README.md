@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PulseQuiz Client
 
-## Getting Started
+A polished dark-mode frontend built with **Next.js 16**, **React 19**, and **Tailwind CSS v4**. This client delivers a premium quiz dashboard experience with secure authentication, student progress tracking, and admin management tools.
 
-First, run the development server:
+## What makes this UI stand out
+
+- Elegant dark glassmorphism surfaces with neon accent highlights
+- Responsive layout optimized for dashboards, quizzes, and admin workflows
+- Smooth page transitions and modern CTA styles for login/register flows
+- Consistent brand across login, dashboard, admin, and instructor views
+- Clean student dashboard with filters, leaderboard, stats cards, and quiz cards
+
+## Key features
+
+- Secure login, registration, password recovery, and reset flows
+- Role-based navigation for students and admin users
+- Real-time analytics, leaderboard, and quiz browsing panels
+- Fully themed dark interface with gradient accents and elevated surfaces
+
+## Local development
+
+Install dependencies and run the client:
 
 ```bash
+cd client
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the frontend.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Useful scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev`: Start the Next.js development server
+- `npm run build`: Build production assets
+- `npm run start`: Run the production server after build
+- `npm run lint`: Run ESLint checks
 
-## Learn More
+## Code structure
 
-To learn more about Next.js, take a look at the following resources:
+- `src/app`: Next.js App Router pages and layouts
+- `src/components`: shared UI components and guards
+- `src/hooks`: authentication state hooks
+- `src/lib`: site config and API client setup
+- `src/services`: auth service abstraction
+- `public`: static assets and icons
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Notes for interviewers
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+PulseQuiz is designed as a full-stack, production-ready assessment platform with:
 
-## Deploy on Vercel
+- custom authentication flow and secure cookie handling
+- admin controls for quizzes, questions, categories, and users
+- student experience with performance metrics and search filters
+- modern dark UI with a cohesive, polished theme
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+If you'd like, I can also show the matching backend architecture and API contract in the project root.

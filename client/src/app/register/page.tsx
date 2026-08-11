@@ -44,12 +44,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
-      <div className="w-full max-w-lg rounded-4xl border border-slate-800 bg-slate-900/95 p-8 shadow-[0_28px_80px_-40px_rgba(15,23,42,0.9)]">
+    <div className="min-h-screen flex items-center justify-center bg-[#02030b] p-4">
+      <div className="w-full max-w-lg rounded-[2rem] border border-[#1b2d58] bg-[#081229]/95 p-8 shadow-[0_28px_90px_-42px_rgba(8,18,41,0.92)] backdrop-blur-xl">
         <div className="text-center space-y-3">
-          <p className="text-xs uppercase tracking-[0.28em] text-slate-500">Start your assessment journey</p>
-          <h1 className="text-3xl font-extrabold text-slate-100">Create your {siteBranding.productName} account</h1>
-          <p className="text-sm text-slate-400">Register to take quizzes, track progress, and unlock student analytics.</p>
+          <p className="text-xs uppercase tracking-[0.28em] text-[#94a9c8]">Start your assessment journey</p>
+          <h1 className="text-3xl font-extrabold text-[#eef7ff]">Create your {siteBranding.productName} account</h1>
+          <p className="text-sm text-[#b8c7e1]">Register to take quizzes, track progress, and unlock student analytics.</p>
         </div>
 
         {errorMsg && (
