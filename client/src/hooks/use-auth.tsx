@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await apiClient.post('/auth/register', payload);
       const userData: User = res.data.data.user;
-      setUser(userData);
+      setUser(null);
       return userData;
     } catch (error) {
       setUser(null);

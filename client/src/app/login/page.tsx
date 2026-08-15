@@ -9,6 +9,7 @@ export default function LoginPage() {
   const { login, user } = useAuth();
   const router = useRouter();
   const [redirectPath, setRedirectPath] = useState('');
+  const [registeredSuccess, setRegisteredSuccess] = useState(false);
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errorMsg, setErrorMsg] = useState('');
@@ -17,7 +18,9 @@ export default function LoginPage() {
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const redirect = params.get('redirect');
+    const registered = params.get('registered');
     if (redirect) setRedirectPath(redirect);
+    if (registered === '1') setRegisteredSuccess(true);
   }, []);
 
   React.useEffect(() => {
@@ -51,6 +54,12 @@ export default function LoginPage() {
           <h1 className="text-3xl font-extrabold tracking-tight text-[#eef7ff]">Sign in to {siteBranding.productName}</h1>
           <p className="text-sm text-[#b8c7e1]">Access quizzes, review results, and manage your learning experience.</p>
         </div>
+
+        {registeredSuccess && (
+          <div className="mt-6 rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-200">
+            Registration successful. Please sign in with your new account.
+          </div>
+        )}
 
         {errorMsg && (
           <div className="mt-6 rounded-3xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-200">

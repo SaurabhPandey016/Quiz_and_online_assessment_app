@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
 
 const difficultyOptions = [
@@ -10,30 +11,53 @@ const difficultyOptions = [
 ];
 
 export default function DashboardPage() {
-  const [quizzes, setQuizzes] = useState<any[]>([]);
+  const [allQuizzes, setAllQuizzes] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [filters, setFilters] = useState({
-    search: '',
     categoryId: '',
     difficulty: '',
     minDuration: '',
     maxDuration: '',
   });
 
+  const fetchQuizzes = async (currentFilters = filters) => {
+    setIsSearching(true);
+    try {
+      const res = await apiClient.get('/student/quizzes', {
+        params: {
+          search: searchInput.trim() || undefined,
+          categoryId: currentFilters.categoryId || undefined,
+          difficulty: currentFilters.difficulty || undefined,
+          minDuration: currentFilters.minDuration || undefined,
+          maxDuration: currentFilters.maxDuration || undefined,
+        },
+      });
+
+      setAllQuizzes(res.data.data.quizzes || []);
+    } catch (err: any) {
+      setError(err?.message || 'Unable to load quizzes.');
+      setAllQuizzes([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   useEffect(() => {
     const fetchDashboardData = async () => {
-      setLoading(true);
+      setInitialLoading(true);
       setError('');
 
       try {
         const [quizzesRes, categoriesRes, historyRes, leaderboardRes] = await Promise.all([
           apiClient.get('/student/quizzes', {
             params: {
-              search: filters.search || undefined,
+              search: searchInput.trim() || undefined,
               categoryId: filters.categoryId || undefined,
               difficulty: filters.difficulty || undefined,
               minDuration: filters.minDuration || undefined,
@@ -45,39 +69,49 @@ export default function DashboardPage() {
           apiClient.get('/student/leaderboard'),
         ]);
 
-        setQuizzes(quizzesRes.data.data.quizzes);
-        setCategories(categoriesRes.data.data.categories);
-        setHistory(historyRes.data.data.history);
-        setLeaderboard(leaderboardRes.data.data.leaderboard);
+        setAllQuizzes(quizzesRes.data.data.quizzes || []);
+        setCategories(categoriesRes.data.data.categories || []);
+        setHistory(historyRes.data.data.history || []);
+        setLeaderboard(leaderboardRes.data.data.leaderboard || []);
       } catch (err: any) {
         setError(err?.message || 'Unable to load the student dashboard.');
+        setAllQuizzes([]);
+        setHistory([]);
+        setLeaderboard([]);
       } finally {
-        setLoading(false);
+        setInitialLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, [filters]);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchQuizzes();
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [searchInput, filters.categoryId, filters.difficulty, filters.minDuration, filters.maxDuration]);
 
   const stats = useMemo(() => {
-    if (!history.length) return { attempted: 0, passed: 0, failed: 0, averageScore: 0, highestScore: 0 };
-
-    const passed = history.filter((item) => item.status === 'COMPLETED').length;
-    const failed = history.filter((item) => item.status === 'FAILED').length;
-    const scores = history.map((item) => item.percentage || 0);
-    const average = scores.length ? scores.reduce((acc, score) => acc + score, 0) / scores.length : 0;
-    const highest = scores.length ? Math.max(...scores) : 0;
+    const completedAttempts = history.filter((item) => item.status === 'COMPLETED' && Number.isFinite(Number(item.percentage)));
+    const validScores = completedAttempts.map((item) => Number(item.percentage) || 0);
+    const averageScore = validScores.length ? validScores.reduce((sum, score) => sum + score, 0) / validScores.length : 0;
+    const highestScore = validScores.length ? Math.max(...validScores) : 0;
+    const passed = completedAttempts.filter((item) => Number(item.percentage || 0) >= Number(item.quiz?.passingScore || 0)).length;
+    const failed = history.filter((item) => item.status === 'FAILED').length + completedAttempts.filter((item) => Number(item.percentage || 0) < Number(item.quiz?.passingScore || 0)).length;
 
     return {
       attempted: history.length,
       passed,
       failed,
-      averageScore: Number(average.toFixed(2)),
-      highestScore: Number(highest.toFixed(2)),
+      averageScore: Number(averageScore.toFixed(2)),
+      highestScore: Number(highestScore.toFixed(2)),
     };
   }, [history]);
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-8 text-slate-400 shadow-lg shadow-slate-950/30">
         Loading your student dashboard...
@@ -131,13 +165,25 @@ export default function DashboardPage() {
                 <p className="text-sm text-slate-500">Search, filter, and choose the right assessment for your skills.</p>
               </div>
               <div className="grid w-full gap-3 sm:grid-cols-2 lg:w-auto lg:grid-cols-3">
-                <input
-                  type="text"
-                  value={filters.search}
-                  onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
-                  placeholder="Search quizzes"
-                  className="min-w-0 rounded-3xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                />
+                <div className="relative min-w-0">
+                  <input
+                    type="text"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    placeholder="Search quizzes"
+                    aria-label="Search quizzes"
+                    className="w-full rounded-3xl border border-slate-800 bg-slate-950 px-4 py-3 pr-10 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                  />
+                  {searchInput && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchInput('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-slate-700 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-slate-300 transition hover:border-sky-400 hover:text-white"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
                 <select
                   value={filters.categoryId}
                   onChange={(e) => setFilters((prev) => ({ ...prev, categoryId: e.target.value }))}
@@ -162,12 +208,16 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            {quizzes.length === 0 ? (
+            {isSearching ? (
+              <div className="rounded-4xl border border-dashed border-slate-800 bg-slate-900/80 p-10 text-center text-slate-400">
+                Searching quizzes...
+              </div>
+            ) : allQuizzes.length === 0 ? (
               <div className="rounded-4xl border border-dashed border-slate-800 bg-slate-900/80 p-10 text-center text-slate-500">
                 No published quizzes match the selected filters.
               </div>
             ) : (
-              quizzes.map((quiz) => (
+              allQuizzes.map((quiz) => (
                 <div key={quiz.id} className="rounded-4xl border border-slate-800 bg-slate-950/95 p-6 shadow-xl shadow-slate-950/20">
                   <div className="flex items-start justify-between gap-4">
                     <div>
@@ -193,12 +243,12 @@ export default function DashboardPage() {
 
                   <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="text-sm text-slate-400">{quiz._count?.questions || 0} questions • {quiz.maxAttempts} attempts allowed</div>
-                    <a
+                    <Link
                       href={`/dashboard/runner/${quiz.id}`}
                       className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
                     >
                       Start Quiz
-                    </a>
+                    </Link>
                   </div>
                 </div>
               ))

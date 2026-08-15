@@ -39,22 +39,31 @@ export const register = async(req, res, next) => {
     try {
         const { name, email, password, role } = req.validated.body
 
-        // Hash password
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+            return next(new AppError('An account with this email already exists. Please log in instead.', 409));
+        }
+
         const saltRounds = 12;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        // Create user
         const user = await prisma.user.create({
             data: {
                 name,
                 email,
                 password: hashedPassword,
-                role : role || "USER" // Default role is USER if not provided
+                role : role || "USER"
             }
         });
 
-        // Send token response
-        sendTokenResponse(user, 201, res);
+        const safeUser = { ...user };
+        delete safeUser.password;
+
+        res.status(201).json({
+            status: 'success',
+            message: 'Account created successfully. Please sign in to continue.',
+            data: { user: safeUser }
+        });
     } catch (error) {
         next(error);
     }

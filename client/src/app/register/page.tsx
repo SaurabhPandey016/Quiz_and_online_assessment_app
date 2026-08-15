@@ -33,9 +33,8 @@ export default function RegisterPage() {
     setSubmitting(true);
 
     try {
-      const user = await register({ ...formData, role: 'USER' });
-      const target = redirectPath.startsWith('/') ? redirectPath : user?.role === 'ADMIN' ? '/admin' : '/dashboard';
-      router.replace(target);
+      await register({ ...formData, role: 'USER' });
+      router.replace('/login?registered=1');
     } catch (err: any) {
       setErrorMsg(err.message || 'Unable to create your account. Please try again.');
     } finally {
