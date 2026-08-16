@@ -17,16 +17,18 @@ const sendTokenResponse = (user, statusCode, res) => {
         }
     );
 
+    const isProductionLike = process.env.NODE_ENV === 'production' || process.env.FRONTEND_URL?.startsWith('https://');
     const cookieOptions  = {
         expires : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 day lifespan
-        httpOnly : true, // Cookie cannot be accessed via client-side scripts
-        secure : process.env.NODE_ENV === "production", // Only send cookie over HTTPS in production
-        sameSite : process.env.NODE_ENV === "production" ? "None" : "Lax" // CSRF protection
+        httpOnly : true,
+        secure : isProductionLike,
+        sameSite : isProductionLike ? 'None' : 'Lax',
+        path: '/',
     };
 
     res.cookie('token', token, cookieOptions);
 
-    user.password = undefined; // Remove password from response for security
+    user.password = undefined;
 
     res.status(statusCode).json({
         status: 'success',
@@ -96,10 +98,13 @@ export const login = async (req, res, next) => {
 
 // logout logic;
 export const logout = (req, res) => {
+    const isProductionLike = process.env.NODE_ENV === 'production' || process.env.FRONTEND_URL?.startsWith('https://');
+
     res.clearCookie('token', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+        secure: isProductionLike,
+        sameSite: isProductionLike ? 'None' : 'Lax',
+        path: '/',
     });
     res.status(200).json({
         status: 'success',

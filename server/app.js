@@ -18,17 +18,23 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  process.env.FRONTEND_URL,
+  'https://pulsequiz-ten.vercel.app',
+].filter(Boolean);
+
 app.use(cookieParser());
 app.use(cors({
   origin: (origin, callback) => {
-    // If no origin is provided (like Postman or mobile apps), allow it
     if (!origin) return callback(null, true);
-    
-    // SMART MAGIC: This dynamically echoes back the incoming origin.
-    // It makes the server accept requests from ANY link or deployment domain!
-    callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new AppError(`Origin ${origin} is not allowed by CORS.`, 403));
   },
-  credentials: true, // Crucial: Allows your secure HTTP-Only cookies to pass through safely
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));

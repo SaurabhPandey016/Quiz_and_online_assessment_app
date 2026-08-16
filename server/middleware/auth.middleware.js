@@ -5,15 +5,15 @@ import {prisma} from '../config/prisma.js'
 export const protect = async(req, res, next) => {
 
     try {
-        // first take the token from the body
-        const token = req.cookies?.token;
+        const cookieToken = req.cookies?.token;
+        const authHeader = req.headers.authorization || '';
+        const headerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+        const token = cookieToken || headerToken;
 
-        // if token is not present just show the error;
         if(!token) {
             return next(new AppError("You are not loggin in. Please login to gain access.", 401));
         }
 
-        // compare and decode the cookie with the supersecret key that we have
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         const currentUser = await prisma.user.findUnique({where : {id : decoded.id}});

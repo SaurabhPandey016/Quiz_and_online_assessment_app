@@ -78,7 +78,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.warn("Logout endpoint bypassed.");
     } finally {
       setUser(null);
-      // Clean reload to login page resets all state reference markers
       window.location.href = redirectPath;
     }
   };
