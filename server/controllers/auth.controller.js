@@ -118,28 +118,26 @@ const createPasswordResetToken = () => {
 export const forgotPassword = async (req, res, next) => {
     try {
         const { email } = req.validated.body;
-        const user = await prisma.user.findUnique({ where: { email } });
+        const normalizedEmail = email.trim();
+        const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
 
-        if (!user) {
-            return res.status(200).json({
-                status: 'success',
-                message: 'If an account matches that email, a password reset token has been generated.'
+        const { resetToken, hashedResetToken, expires } = createPasswordResetToken();
+        const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${encodeURIComponent(resetToken)}`;
+
+        if (user) {
+            await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                    passwordResetToken: hashedResetToken,
+                    passwordResetExpires: expires
+                }
             });
         }
 
-        const { resetToken, hashedResetToken, expires } = createPasswordResetToken();
-        await prisma.user.update({
-            where: { id: user.id },
-            data: {
-                passwordResetToken: hashedResetToken,
-                passwordResetExpires: expires
-            }
-        });
-
         res.status(200).json({
             status: 'success',
-            message: 'Password reset token generated successfully.',
-            data: { resetToken }
+            message: 'If an account matches that email, a password reset link has been generated below.',
+            data: { resetToken, resetUrl }
         });
     } catch (error) {
         next(error);

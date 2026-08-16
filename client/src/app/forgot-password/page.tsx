@@ -10,20 +10,40 @@ export default function ForgotPasswordPage() {
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [resetLink, setResetLink] = useState('');
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
     setStatus('');
+    setResetLink('');
     setSubmitting(true);
 
     try {
       const res = await apiClient.post('/auth/forgot-password', { email });
-      setStatus(res.data.message || 'If the email exists, a reset token has been generated.');
+      const generatedResetLink = res.data?.data?.resetUrl || '';
+
+      if (generatedResetLink) {
+        setResetLink(generatedResetLink);
+        setStatus(res.data.message || 'A reset link has been generated successfully.');
+      } else {
+        setStatus(res.data.message || 'If the email exists, a reset link has been generated below.');
+      }
     } catch (err: any) {
       setError(err.message || 'Unable to process password reset request.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!resetLink) return;
+
+    try {
+      await navigator.clipboard.writeText(resetLink);
+      setStatus('Reset link copied. Paste it in the browser to continue.');
+    } catch {
+      setError('Copy failed. You can still select and copy the reset link manually.');
     }
   };
 
@@ -38,7 +58,31 @@ export default function ForgotPasswordPage() {
 
         {status && (
           <div className="mt-6 rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-200">
-            {status}
+            <p>{status}</p>
+            {resetLink && (
+              <div className="mt-4 space-y-3">
+                <div className="rounded-2xl border border-emerald-400/30 bg-slate-950/40 p-3 text-[11px] break-all text-emerald-50">
+                  {resetLink}
+                </div>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <a
+                    href={resetLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-100 transition hover:border-emerald-300 hover:bg-emerald-500/20"
+                  >
+                    Open link
+                  </a>
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="inline-flex items-center justify-center rounded-full border border-slate-600 bg-slate-900/70 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-200 transition hover:border-sky-400 hover:text-white"
+                  >
+                    Copy link
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

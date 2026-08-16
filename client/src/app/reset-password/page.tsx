@@ -18,9 +18,13 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const tokenFromParams = params.get('token');
-    if (tokenFromParams) {
-      setToken(tokenFromParams);
+
+    if (!tokenFromParams) {
+      setError('Missing reset token. Please request a new password reset link.');
+      return;
     }
+
+    setToken(tokenFromParams);
   }, []);
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -48,7 +52,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#02030b] p-4">
-      <div className="w-full max-w-md rounded-[2rem] border border-[#1b2d58] bg-[#081229]/95 p-8 shadow-[0_28px_90px_-42px_rgba(8,18,41,0.92)] backdrop-blur-xl">
+      <div className="w-full max-w-md rounded-4xl border border-[#1b2d58] bg-[#081229]/95 p-8 shadow-[0_28px_90px_-42px_rgba(8,18,41,0.92)] backdrop-blur-xl">
         <div className="text-center space-y-3">
             <p className="text-xs uppercase tracking-[0.28em] text-[#94a9c8]">Confirm reset</p>
             <h1 className="text-3xl font-extrabold text-[#eef7ff]">Choose a new password</h1>
@@ -96,7 +100,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={submitting || !token}
-            className="w-full rounded-3xl bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/20 transition hover:brightness-110 disabled:opacity-60"
+            className="w-full rounded-3xl bg-linear-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/20 transition hover:brightness-110 disabled:opacity-60"
           >
             {submitting ? 'Resetting password...' : 'Reset password'}
           </button>

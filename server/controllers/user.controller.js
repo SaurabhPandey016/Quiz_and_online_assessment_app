@@ -1,5 +1,6 @@
 import { prisma } from '../config/prisma.js';
 import { AppError } from '../errors/custom.error.js';
+import bcrypt from 'bcrypt';
 
 export const getAllUsersAdmin = async (req, res, next) => {
   try {
@@ -20,6 +21,44 @@ export const getAllUsersAdmin = async (req, res, next) => {
       status: 'success',
       results: users.length,
       data: { users },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createUserAdmin = async (req, res, next) => {
+  try {
+    const { name, email, password, role = 'USER' } = req.validated.body;
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return next(new AppError('An account with this email already exists. Please choose another email.', 409));
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    res.status(201).json({
+      status: 'success',
+      message: 'User account created successfully.',
+      data: { user },
     });
   } catch (error) {
     next(error);

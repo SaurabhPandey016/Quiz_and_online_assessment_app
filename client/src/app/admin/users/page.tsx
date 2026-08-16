@@ -17,6 +17,13 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [formState, setFormState] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'USER' as 'ADMIN' | 'USER',
+  });
 
   useEffect(() => {
     apiClient
@@ -27,6 +34,22 @@ export default function AdminUsersPage() {
       .catch((err: any) => setError(err.message || 'Unable to load users.'))
       .finally(() => setLoading(false));
   }, []);
+
+  const createUser = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError('');
+    setCreating(true);
+
+    try {
+      const res = await apiClient.post('/admin/users', formState);
+      setUsers((prev) => [res.data.data.user, ...prev]);
+      setFormState({ name: '', email: '', password: '', role: 'USER' });
+    } catch (err: any) {
+      setError(err.message || 'Unable to create user account.');
+    } finally {
+      setCreating(false);
+    }
+  }; 
 
   const updateUserStatus = async (id: string, currentStatus: string) => {
     try {
@@ -63,9 +86,52 @@ export default function AdminUsersPage() {
           <div>
             <p className="text-sm uppercase tracking-[0.28em] text-slate-500">Admin User Management</p>
             <h1 className="text-3xl font-bold text-slate-100">Manage platform accounts</h1>
-            <p className="mt-2 text-slate-400">View and moderate registered students and administrators.</p>
+            <p className="mt-2 text-slate-400">Create, review, and moderate registered students and administrators.</p>
           </div>
         </div>
+
+        <form onSubmit={createUser} className="mt-6 grid gap-4 rounded-3xl border border-slate-800 bg-slate-950/80 p-4 md:grid-cols-[1.2fr_1.2fr_1fr_0.8fr_auto]">
+          <input
+            type="text"
+            required
+            value={formState.name}
+            onChange={(e) => setFormState((prev) => ({ ...prev, name: e.target.value }))}
+            placeholder="Full name"
+            className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+          />
+          <input
+            type="email"
+            required
+            value={formState.email}
+            onChange={(e) => setFormState((prev) => ({ ...prev, email: e.target.value }))}
+            placeholder="Email address"
+            className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+          />
+          <input
+            type="password"
+            required
+            minLength={6}
+            value={formState.password}
+            onChange={(e) => setFormState((prev) => ({ ...prev, password: e.target.value }))}
+            placeholder="Password"
+            className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+          />
+          <select
+            value={formState.role}
+            onChange={(e) => setFormState((prev) => ({ ...prev, role: e.target.value as 'ADMIN' | 'USER' }))}
+            className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm text-slate-100 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+          >
+            <option value="USER">User</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+          <button
+            type="submit"
+            disabled={creating}
+            className="rounded-2xl bg-linear-to-r from-sky-500 to-violet-500 px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-950 transition hover:brightness-110 disabled:opacity-60"
+          >
+            {creating ? 'Saving...' : 'Create'}
+          </button>
+        </form>
       </div>
 
       <div className="overflow-x-auto rounded-4xl border border-slate-800 bg-slate-950/95 shadow-xl shadow-slate-950/20">

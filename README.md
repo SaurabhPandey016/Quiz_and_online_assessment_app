@@ -1,56 +1,152 @@
 # PulseQuiz
 
-PulseQuiz is an enterprise-ready assessment platform built with a clean separation between frontend, backend, and database layers. It delivers a modern dark dashboard UX for students and administrators while maintaining secure, scalable backend operations.
+PulseQuiz is a modern, full-stack assessment platform built to help students take quizzes, track progress, and receive structured feedback while giving administrators tools to manage users, categories, and question banks from a single dashboard.
 
-## Highlights
+It follows a clean separation between frontend, backend, and database layers, with a polished dark interface, secure authentication, and a role-aware app flow for both students and admins.
 
-- **Role-based user experience** for students and admins
-- **Secure authentication** with JWT/cookie session management
-- **Full admin control panel** for users, categories, quizzes, and questions
-- **Live analytics & performance dashboards** powered by Chart.js
-- **Dark-mode glassmorphism UI** with gradient accents and responsive mobile behavior
-- **API-driven architecture** with Express, Prisma, and a centralized Axios client
+## App overview
 
-## Architecture Overview
+PulseQuiz combines:
+
+- a student-facing dashboard with search, filters, leaderboard insights, and attempt history
+- an admin control center for managing users, quiz content, categories, and question data
+- a secure auth layer with login, registration, password reset, and role-based access control
+- a relational database-powered backend using Prisma and PostgreSQL
+- responsive UI components built in Next.js with a premium glassmorphism theme
+
+## Why this project stands out
+
+- Role-based app flow for students and admins
+- JWT-based authentication with HTTP-only cookies and protected routes
+- Deep dashboard analytics with charts and score summaries
+- Modular structure with controller/service/route separation in the backend
+- Clean Next.js App Router architecture with reusable client-side guards
+- Strong UX polish, including search input refinement, results cards, and responsive layout tuning
+
+## High-level architecture
+
+```mermaid
+flowchart LR
+  User[Student or Admin] --> FE[Next.js Frontend]
+  FE --> API[Express API]
+  API --> DB[(PostgreSQL)]
+  API --> Auth[JWT Auth + Password Reset]
+  FE --> Guard[Role Guards]
+  Admin[Admin UI] --> CRUD[User / Quiz / Category / Question Management]
+  Student[Student UI] --> Quiz[Quiz Discovery + Attempt Runner]
+```
+
+## Project structure
+
+```text
+Project-5/
+├── client/                 # Next.js frontend
+│   ├── src/app/            # App Router pages and layouts
+│   ├── src/components/     # Shared UI and guards
+│   ├── src/hooks/          # Auth state
+│   ├── src/lib/            # API client and shared config
+│   └── package.json
+├── server/                 # Express API
+│   ├── controllers/        # Auth, admin, student, analytics logic
+│   ├── routes/             # API endpoints
+│   ├── schemas/            # Zod validation schemas
+│   ├── prisma/             # Prisma schema and seed data
+│   └── package.json
+├── README.md               # App overview and setup guide
+└── package.json            # Optional workspace root config
+```
+
+## Key user flows
+
+### Student flow
+
+- sign up or log in
+- browse quizzes with search and category filters
+- launch a quiz from the dashboard
+- submit answers and review results
+- check progress and leaderboard insights
+
+### Admin flow
+
+- access the admin dashboard
+- create or manage categories and quizzes
+- add and review users including admin accounts
+- enable/disable user access or remove stale accounts
+- monitor performance metrics and content activity
+
+### Authentication flow
+
+- login and registration validate user input with Zod
+- protected routes use middleware to restrict unauthorized access
+- forgot password creates a secure reset token and returns a reset link
+- reset password validates the token, hashes the new password, and clears the token after successful reset
+
+## Detailed feature summary
 
 ### Frontend
 
-- `client/` is a **Next.js 16 App Router** app using React 19 and Tailwind CSS v4.
-- Global app state is managed through a custom `useAuth` hook and auth provider.
-- Role guard components protect admin and student routes.
-- Shared UI components include `SiteShell`, admin charts, and navigation cards.
-- `lucide-react` is used for crisp iconography across the UI.
+- Next.js 16 App Router with React 19
+- Dark visual system with layered cards, gradients, and modern spacing
+- Search experience with accessible clear button and filter controls
+- Student dashboards with summary cards, recent history, and rankings
+- Admin user management with creation and account moderation actions
 
 ### Backend
 
-- `server/` is built with **Express 5** and **Prisma ORM**.
-- Routes are organized by domain: auth, admin, student, analytics, grading, sessions, and users.
-- Input validation and error handling are centralized using Zod and custom middleware.
-- Dynamic CORS support allows authenticated browser and API clients to connect safely.
+- Express 5 server with route-based organization
+- Prisma ORM integration for PostgreSQL models
+- Centralized validation with Zod schemas
+- JWT cookie-based session handling
+- Custom error middleware for consistent API responses
 
-### Data layer
+### Security
 
-- Prisma models power the relational schema for users, quizzes, questions, sessions, attempts, and grades.
-- PostgreSQL is the production-ready database for transactional consistency.
+- password hashing with bcrypt
+- protected admin endpoints and student route guards
+- reset tokens stored as hashed values and expired automatically
+- secure cookie configuration for authenticated sessions
 
-## What makes this app impressive
+## Local setup
 
-- **Complete feature flow**: onboarding, quizzes, submission, grading, and analytics.
-- **Professional UI polish** with a layered dark theme, responsive cards, and elevated surfaces.
-- **Developer-friendly structure** that is easy to extend with CI/CD, Docker, or cloud deployment.
-- **Security-first design** with auth guards and credentialed CORS support.
-
-## Run the project locally
-
-### 1. Backend
+### 1. Install backend dependencies
 
 ```bash
 cd server
 npm install
+```
+
+### 2. Configure environment variables
+
+Create a `.env` file inside the `server/` directory:
+
+```bash
+DATABASE_URL=postgresql://user:password@localhost:5432/pulsequiz
+JWT_SECRET=supersecuresecret
+JWT_EXPIRES_IN=7d
+PORT=10000
+FRONTEND_URL=http://localhost:3000
+```
+
+### 3. Generate Prisma client and initialize the database
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+If you want seed data, run:
+
+```bash
+node prisma/seed.js
+```
+
+### 4. Start the backend
+
+```bash
 npm run dev
 ```
 
-### 2. Frontend
+### 5. Install frontend dependencies and run the app
 
 ```bash
 cd ../client
@@ -58,54 +154,40 @@ npm install
 npm run dev
 ```
 
-### 3. Open
+### 6. Open the app
 
-Visit `http://localhost:3000` for the frontend; the backend defaults to `http://localhost:10000`.
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:10000/api/v1
 
-## Detailed feature summary
+## Password reset flow
 
-### Authentication
+The application supports a complete reset flow:
 
-- Secure login and registration flows
-- Password recovery and reset flows
-- Role-based redirecting for admins and students
-- Session preservation using secure cookies
+1. user visits the forgot-password screen
+2. app submits the email to `/api/v1/auth/forgot-password`
+3. backend verifies the account and creates a time-limited reset token
+4. frontend receives a reset URL in the response and opens it in the browser
+5. user sets a new password at `/reset-password?token=...`
+6. backend verifies the token, hashes the new password, and clears the reset token
 
-### Student experience
+> For local development, `FRONTEND_URL` should be set correctly so the reset link opens on the frontend route.
 
-- Quiz discovery with search and filter controls
-- Performance summary cards and leaderboard panel
-- Attempt history and dynamic scoring metrics
-- Responsive quiz runner UI with progress controls
+## Admin upgrade notes
 
-### Admin experience
+Admins can now:
 
-- Admin hub with navigation cards and analytics banner
-- Manage users, categories, quizzes, and questions from a single interface
-- Dashboard analytics sections that scroll cleanly from navigation links
-- Chart-driven insights for registrations, attempts, and quiz popularity
-
-### Developer & interviewer notes
-
-- The app uses a clear **client/server separation** and avoids monolithic design.
-- Authentication is implemented securely while keeping the UI smooth and intuitive.
-- The frontend uses a central Axios client for consistent backend requests.
-- The backend is organized by route and controller, making business logic easy to maintain.
-- The codebase is optimized for rapid expansion with more roles, features, or SaaS onboarding.
-
-## Environment variables
-
-Create a `.env` file in `server/` with:
-
-```bash
-DATABASE_URL=postgresql://user:password@localhost:5432/pulsequiz
-JWT_SECRET=supersecuresecret
-PORT=10000
-```
+- create standard users or additional admin accounts from the admin user management screen
+- enable or disable user accounts
+- review the current role and account status in one place
 
 ## Recommended next steps
 
-- Add automated tests for frontend flows and backend endpoints
-- Wire deployment to Vercel (frontend) and a managed database backend
-- Add Docker support for local development parity
-- Add more granular admin analytics, audit logs, and student progress reports
+- add automated tests for auth and admin routes
+- add email delivery integration with SendGrid or Azure Communication Services
+- containerize the app with Docker for one-command setup
+- extend analytics with richer charts, audit logs, and progress tracking
+- prepare deployment pipelines for Vercel and a managed PostgreSQL service
+
+## Product intent
+
+PulseQuiz is designed as a scalable, production-ready assessment platform that balances usability, security, and operational control. It is structured to support more advanced features like live exams, role-specific reporting, and enterprise-grade deployment workflows as the app grows.

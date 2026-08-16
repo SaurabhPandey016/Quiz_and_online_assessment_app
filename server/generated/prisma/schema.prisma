@@ -36,15 +36,17 @@ enum AttemptStatus {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  name      String
-  email     String    @unique
-  password  String
-  role      Role      @default(USER)
-  status    String    @default("active")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @default(now())
-  attempts  Attempt[]
+  id                   String    @id @default(uuid())
+  name                 String
+  email                String    @unique
+  password             String
+  role                 Role      @default(USER)
+  status               String    @default("active")
+  passwordResetToken   String?   @map("password_reset_token")
+  passwordResetExpires DateTime? @map("password_reset_expires")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @default(now())
+  attempts             Attempt[]
 
   @@map("users") // name the table users in Supabase
 }

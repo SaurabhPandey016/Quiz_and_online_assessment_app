@@ -152,7 +152,7 @@ export default function DashboardPage() {
                 <div key={stat.label} className="rounded-3xl border border-slate-800 bg-slate-950/90 p-5 shadow-inner shadow-slate-950/10">
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-500">{stat.label}</p>
                   <p className="mt-4 text-3xl font-semibold text-slate-100">{stat.value}</p>
-                  <div className={`mt-4 h-1 rounded-full bg-gradient-to-r ${stat.tone}`} />
+                  <div className={`mt-4 h-1 rounded-full bg-linear-to-r ${stat.tone}`} />
                 </div>
               ))}
             </div>
@@ -166,21 +166,35 @@ export default function DashboardPage() {
               </div>
               <div className="grid w-full gap-3 sm:grid-cols-2 lg:w-auto lg:grid-cols-3">
                 <div className="relative min-w-0">
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="6" />
+                    <path d="M16 16L21 21" />
+                  </svg>
                   <input
                     type="text"
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Search quizzes"
                     aria-label="Search quizzes"
-                    className="w-full rounded-3xl border border-slate-800 bg-slate-950 px-4 py-3 pr-10 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                    className="w-full rounded-full border border-slate-800 bg-slate-950 py-3 pl-11 pr-12 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
                   />
                   {searchInput && (
                     <button
                       type="button"
+                      aria-label="Clear search"
                       onClick={() => setSearchInput('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-slate-700 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-slate-300 transition hover:border-sky-400 hover:text-white"
+                      className="absolute right-2.5 top-1/2 h-7 w-7 -translate-y-1/2 rounded-full border border-slate-700 bg-slate-900/90 text-lg leading-none text-slate-200 shadow-sm shadow-slate-950/30 transition hover:border-sky-400 hover:text-white"
                     >
-                      Clear
+                      ×
                     </button>
                   )}
                 </div>
@@ -245,7 +259,7 @@ export default function DashboardPage() {
                     <div className="text-sm text-slate-400">{quiz._count?.questions || 0} questions • {quiz.maxAttempts} attempts allowed</div>
                     <Link
                       href={`/dashboard/runner/${quiz.id}`}
-                      className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
+                      className="inline-flex items-center justify-center rounded-full bg-linear-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
                     >
                       Start Quiz
                     </Link>

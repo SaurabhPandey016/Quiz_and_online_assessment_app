@@ -37,16 +37,18 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          <nav className="hidden items-center gap-2 md:flex">
-            <Link href="/dashboard" className={pathname.startsWith('/dashboard') ? 'rounded-full bg-[#081229] px-4 py-2 text-sm font-semibold text-[#eef7ff] shadow-sm shadow-[#0d1640]/40' : 'rounded-full px-4 py-2 text-sm text-[#94a9c8] transition hover:bg-[#081229] hover:text-[#f8fbff]'}>
-              Quizzes
-            </Link>
-            {user?.role === 'ADMIN' && (
-              <Link href="/admin" className={pathname === '/admin' ? 'rounded-full bg-[#081229] px-4 py-2 text-sm font-semibold text-[#eef7ff] shadow-sm shadow-[#0d1640]/40' : 'rounded-full px-4 py-2 text-sm text-[#94a9c8] transition hover:bg-[#081229] hover:text-[#f8fbff]'}>
-                Admin Dashboard
+          {user && (
+            <nav className="hidden items-center gap-2 md:flex">
+              <Link href="/dashboard" className={pathname.startsWith('/dashboard') ? 'rounded-full bg-[#081229] px-4 py-2 text-sm font-semibold text-[#eef7ff] shadow-sm shadow-[#0d1640]/40' : 'rounded-full px-4 py-2 text-sm text-[#94a9c8] transition hover:bg-[#081229] hover:text-[#f8fbff]'}>
+                Quizzes
               </Link>
-            )}
-          </nav>
+              {user.role === 'ADMIN' && (
+                <Link href="/admin" className={pathname === '/admin' ? 'rounded-full bg-[#081229] px-4 py-2 text-sm font-semibold text-[#eef7ff] shadow-sm shadow-[#0d1640]/40' : 'rounded-full px-4 py-2 text-sm text-[#94a9c8] transition hover:bg-[#081229] hover:text-[#f8fbff]'}>
+                  Admin Dashboard
+                </Link>
+              )}
+            </nav>
+          )}
 
           <div className="flex items-center gap-3">
             {loading ? (
