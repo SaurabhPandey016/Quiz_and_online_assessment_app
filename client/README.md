@@ -1,35 +1,135 @@
 # PulseQuiz Client
 
-This is the frontend for the PulseQuiz assessment platform. It is built with **Next.js 16**, **React 19**, **Tailwind CSS v4**, and **lucide-react** for iconography.
+<div align="center">
 
-## Core goals
+![PulseQuiz Frontend](https://img.shields.io/badge/Frontend-Next.js%2016-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 
-- Provide a polished dark-mode experience for students and admins.
-- Enable secure UX flows for login, registration, password recovery, and quiz completion.
-- Offer responsive interfaces for dashboard cards, filters, analytics, and management screens.
-- Keep frontend code modular and reusable.
+[![Next.js](https://img.shields.io/badge/Next.js-16.3.0-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2.8-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind](https://img.shields.io/badge/Tailwind-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-## Pages and flows
+<p>
+  <strong>Modern, role-aware frontend for the PulseQuiz assessment platform</strong>
+</p>
 
-- `/login` — secure login with redirect handling
-- `/register` — account creation with validation and auto-redirect
-- `/forgot-password` — request password reset token
-- `/reset-password` — complete password reset flow
-- `/dashboard` — student hub with filters, quizzes, leaderboard, and history
-- `/dashboard/runner/[quizId]` — quiz play experience
-- `/admin` — admin hub and analytics
-- `/admin/users` — users list and actions
-- `/admin/categories` — category creation and management
-- `/admin/quizzes` — quiz creation and publication
-- `/admin/questions` — question management workflow
+<p>
+  Designed to deliver a premium experience for students, administrators, and secure authentication workflows across a responsive application.
+</p>
 
-## What this client delivers
+</div>
 
-- **Auth guard behavior** for admin and student pages
-- **Centralized API client** with Axios, credentials support, and error handling
-- **Modern dark UI** with glassmorphism panels, gradient CTA buttons, and soft shadows
-- **Lucide icons** for crisp branding and navigation visuals
-- **Responsive layout** for mobile and desktop screens
+---
+
+## Overview
+
+The PulseQuiz client is the user-facing layer of the platform. It is built with Next.js App Router and provides the interface for authentication, dashboard navigation, quiz participation, admin management, and analytics workflows.
+
+The frontend is intentionally designed with a modern, dark premium aesthetic and clean component structure to make the product feel sharp, credible, and production-ready.
+
+---
+
+## Product goals
+
+- provide a premium experience for quiz-taking and admin operations
+- support secure authentication and protected routes
+- make dashboard data and actions easy to scan and use
+- keep UI structure reusable and scalable for future features
+- align with the backend API with clean, credential-aware requests
+
+---
+
+## Key user journeys
+
+### Student portal
+
+- sign in or register
+- browse available quizzes
+- search and filter content
+- launch a quiz from the dashboard
+- complete the assessment flow and review results
+
+### Admin portal
+
+- access admin dashboard and analytics screens
+- manage categories and question banks
+- create and structure quizzes
+- review user data and role access
+- create additional admin accounts from the admin management page
+
+### Auth and recovery flows
+
+- login and registration screens
+- forgot-password workflow
+- reset-password screen with token validation
+- protected route guards based on role and auth state
+
+---
+
+## Core frontend capabilities
+
+### Interface design
+
+- premium dark UI with layered cards and modern spacing systems
+- responsive layout for mobile and large desktop screens
+- clean navigation patterns and user-friendly actions
+- feature polish such as refined search clear behavior and visual hierarchy
+
+### Architecture
+
+- App Router-based page organization
+- reusable components and guards
+- centralized HTTP client for API calls
+- role-aware UX for admin and student flows
+- clean separation between UI, hooks, services, and config
+
+### Client-side logic
+
+- auth session tracking through a dedicated hook
+- redirect handling for protected screens
+- cookie-aware requests for secure backend communication
+- shared config for site metadata and API endpoints
+
+---
+
+## Pages and routes
+
+- `/login` — user authentication
+- `/register` — account creation
+- `/forgot-password` — password reset request
+- `/reset-password` — final password reset
+- `/dashboard` — student dashboard
+- `/dashboard/runner/[quizId]` — quiz execution experience
+- `/admin` — admin dashboard overview
+- `/admin/users` — user management
+- `/admin/categories` — category management
+- `/admin/quizzes` — quiz management
+- `/admin/questions` — question management
+
+---
+
+## Folder structure
+
+```text
+client/
+├── src/
+│   ├── app/                 # application pages and layouts
+│   ├── components/          # shared UI, site shell, charts, guards
+│   ├── hooks/               # auth and shared client state
+│   ├── lib/                 # API client and site config
+│   ├── services/            # auth and data helpers
+│   ├── types/               # TypeScript interfaces
+│   └── ...
+├── public/                  # static assets
+├── package.json
+├── next.config.ts
+├── tsconfig.json
+├── eslint.config.mjs
+├── README.md
+└── next-env.d.ts
+```
+
+---
 
 ## Local development
 
@@ -39,36 +139,53 @@ npm install
 npm run dev
 ```
 
-The frontend runs at `http://localhost:3000`.
+Frontend URL:
+
+```bash
+http://localhost:3000
+```
+
+---
 
 ## Scripts
 
-- `npm run dev` — start development server
-- `npm run build` — production build
-- `npm run start` — start built app
-- `npm run lint` — run ESLint
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
 
-## Folder structure
+### Script purpose
 
-- `src/app` — top-level pages and layout definitions
-- `src/components` — shared UI components, guards, and chart components
-- `src/hooks` — reusable React state hooks (`useAuth`)
-- `src/lib` — site config, API client, and branding constants
-- `src/services` — auth and API helper services
+- `npm run dev` — run the client in development mode
+- `npm run build` — create a production build
+- `npm run start` — start the production build
+- `npm run lint` — validate code quality and consistency
 
-## Frontend behavior
+---
 
-- The `SiteShell` component provides the fixed navbar and footer across all pages.
-- `useAuth` tracks session state, redirects unauthenticated users, and keeps role-based access consistent.
-- Admin cards and analytics navigation use clean anchor behavior and modern hover states.
-- Footer contact details now include email, phone, GitHub, and LinkedIn.
+## Production considerations
 
-## Notes for reviewers
+The frontend is designed for secure deployment with a backend API hosted separately. The client is configured to use credential-aware requests and works smoothly in Vercel + Render deployments.
 
-This frontend demonstrates:
+### Important behavior
 
-- a highly polished UX design system
-- strong separation of concerns
-- reusable, testable component patterns
-- scalable page routing with Next.js App Router
-- integration with backend auth and analytics APIs
+- API calls use cookies for session interaction when needed
+- protected endpoints redirect unauthenticated users properly
+- admin and student routes use role-aware gating
+- frontend settings are environment dependent for live deployment
+
+---
+
+## Why this frontend stands out
+
+This client demonstrates more than a simple landing page or demo UI. It shows:
+
+- modern framework usage in production-style architecture
+- robust auth flow integration
+- component-level thinking and reusable design patterns
+- polished UX across dashboards and management screens
+- deployment readiness for a realistic SaaS-style application
+
+This makes it a strong frontend project for interviews, portfolio review, and technical assessment scenarios.
