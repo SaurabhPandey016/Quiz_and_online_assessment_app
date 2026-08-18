@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+const DEFAULT_API_URL =
+    process.env.NEXT_PUBLIC_API_URL ||
+    (process.env.NODE_ENV === 'production'
+        ? 'https://quiz-and-online-assessment-app.onrender.com/api/v1'
+        : 'http://localhost:10000/api/v1');
+
 export const apiClient = axios.create({
-    baseURL : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:10000/api/v1',
+    baseURL: DEFAULT_API_URL,
     timeout: 15000,
     headers: {
         'Content-Type': 'application/json',
@@ -45,8 +51,7 @@ apiClient.interceptors.response.use(
 
 export const checkApiHealth = async (): Promise<boolean> => {
     try {
-        const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:10000/api/v1';
-        const response = await axios.get(`${baseURL}/health`, {
+        const response = await axios.get(`${DEFAULT_API_URL}/health`, {
             timeout: 8000,
             withCredentials: true,
         });
