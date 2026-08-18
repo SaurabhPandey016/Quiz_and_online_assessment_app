@@ -23,7 +23,10 @@ const allowedOrigins = [
   'http://127.0.0.1:3000',
   process.env.FRONTEND_URL,
   'https://pulsequiz-ten.vercel.app',
+  'https://*.vercel.app',
 ].filter(Boolean);
+
+console.log('✅ CORS Allowed Origins:', allowedOrigins);
 
 app.use(cookieParser());
 app.use(cors({
@@ -46,9 +49,22 @@ app.use((req, res, next) => {
 
 const PORT = process.env.PORT || 10000;
 
+console.log(`
+🚀 PulseQuiz Server Configuration:
+📍 Port: ${PORT}
+🌍 Frontend: ${process.env.FRONTEND_URL || 'not set'}
+🔐 JWT: ${process.env.JWT_SECRET ? '✅' : '❌'}
+`);
+
 app.get('/', (req, res) => {
-    res.send(`Server is Healthy and running with no errors on port : ${PORT}`);
+    res.status(200).json({
+        status: 'success',
+        message: `PulseQuiz API is running on port ${PORT}`,
+        environment: process.env.NODE_ENV || 'development',
+        timestamp: new Date().toISOString(),
+    });
 });
+
 
 // Mount the authentication routing pipelines
 app.use('/api/v1/auth', authRoutes);

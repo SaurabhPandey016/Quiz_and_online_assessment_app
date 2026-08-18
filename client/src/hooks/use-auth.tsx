@@ -16,12 +16,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  
-  // Use a reference pointer to guarantee this check only ever triggers ONCE on page boot
   const initialCheckDone = useRef(false);
 
   useEffect(() => {
-    // If the check has already run once, stop immediately. Prevent login page interference.
     if (initialCheckDone.current) return;
 
     async function checkSession() {
@@ -30,10 +27,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (res.data.status === 'success') {
           setUser(res.data.data.user);
         }
-      } catch (err) {
+      } catch {
+        // Not logged in or error - either way, no user session
         setUser(null);
       } finally {
-        initialCheckDone.current = true; // Mark checking phase as absolute dead/complete
+        initialCheckDone.current = true;
         setLoading(false);
       }
     }
@@ -48,9 +46,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userData: User = res.data.data.user;
       setUser(userData);
       return userData;
-    } catch (error) {
+    } catch (error: any) {
       setUser(null);
-      throw error;
+      throw new Error(error.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -63,9 +61,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userData: User = res.data.data.user;
       setUser(null);
       return userData;
-    } catch (error) {
+    } catch (error: any) {
       setUser(null);
-      throw error;
+      throw new Error(error.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -74,8 +72,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async (redirectPath = '/login') => {
     try {
       await apiClient.post('/auth/logout');
-    } catch (err) {
-      console.warn("Logout endpoint bypassed.");
+    } catch {
+      // Logout endpoint error is OK - user is still logged out locally
     } finally {
       setUser(null);
       window.location.href = redirectPath;
@@ -91,6 +89,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be nested within an explicit AuthProvider container');
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
   return context;
 }
