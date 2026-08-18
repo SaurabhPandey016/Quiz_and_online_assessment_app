@@ -26,15 +26,15 @@ function LinkCard({ href, title, description }: { href: string; title: string; d
 
   const cardContent = (
     <>
-      <p className="text-xs uppercase tracking-[0.26em] text-slate-500">Admin Navigation</p>
-      <h2 className="mt-3 text-xl font-semibold text-slate-100 transition group-hover:text-sky-400">{title}</h2>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-cyan-300/80">Admin Navigation</p>
+      <h2 className="mt-3 text-xl font-semibold text-slate-100 transition group-hover:text-cyan-300">{title}</h2>
       <p className="mt-2 text-sm text-slate-400">{description}</p>
-      <span className="mt-4 inline-flex rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-300 transition group-hover:bg-slate-700">Open</span>
+      <span className="mt-4 inline-flex rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-200">Open</span>
     </>
   );
 
   const commonClassName =
-    'group block rounded-4xl border border-slate-800 bg-slate-900/90 p-6 transition duration-200 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900/95';
+    'premium-card group block rounded-[28px] p-6 transition-all duration-200';
 
   return isAnchor ? (
     <a href={href} className={commonClassName}>
@@ -80,9 +80,10 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-100">Platform Analytics Control Matrix</h1>
-        <p className="text-slate-400 text-sm mt-1">Live metrics compiled from your Supabase PostgreSQL cluster variables.</p>
+      <div className="rounded-[30px] border border-slate-800/80 bg-slate-950/60 p-6 shadow-[0_25px_90px_-38px_rgba(59,130,246,0.38)]">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-cyan-300/80">Overview</p>
+        <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-100">Platform Analytics Control Matrix</h1>
+        <p className="mt-2 text-sm text-slate-400">Live metrics compiled from your assessment system and engagement activity.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -93,26 +94,24 @@ export default function AdminDashboard() {
         <LinkCard href="/admin#analytics" title="Analytics" description="Scroll to analytics metrics and charts." />
       </div>
 
-      {/* Summary Scorecard Grid Cards Layout */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Students</h3>
-          <p className="text-3xl font-black text-slate-100 mt-2">{stats.totalStudents}</p>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="premium-card rounded-[28px] p-6">
+          <h3 className="text-[11px] font-bold uppercase tracking-[0.28em] text-slate-400">Total Students</h3>
+          <p className="mt-4 text-3xl font-black text-slate-100">{stats.totalStudents}</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Quizzes</h3>
-          <p className="text-3xl font-black text-slate-100 mt-2">{stats.totalQuizzes}</p>
-          <span className="text-[10px] text-slate-500 block mt-1">{stats.publishedQuizzes} Published | {stats.draftQuizzes} Drafts</span>
+        <div className="premium-card rounded-[28px] p-6">
+          <h3 className="text-[11px] font-bold uppercase tracking-[0.28em] text-slate-400">Total Quizzes</h3>
+          <p className="mt-4 text-3xl font-black text-slate-100">{stats.totalQuizzes}</p>
+          <span className="mt-2 block text-[10px] uppercase tracking-[0.2em] text-slate-400">{stats.publishedQuizzes} Published • {stats.draftQuizzes} Drafts</span>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Questions</h3>
-          <p className="text-3xl font-black text-slate-100 mt-2">{stats.totalQuestions}</p>
+        <div className="premium-card rounded-[28px] p-6">
+          <h3 className="text-[11px] font-bold uppercase tracking-[0.28em] text-slate-400">Total Questions</h3>
+          <p className="mt-4 text-3xl font-black text-slate-100">{stats.totalQuestions}</p>
         </div>
       </div>
 
-      {/* RENDER THE CHART GRAPH SYSTEM INFRASTRUCTURE */}
       <section id="analytics" className="scroll-mt-24">
         <AdminCharts 
           registrationTrends={chartsData.registrationTrends}

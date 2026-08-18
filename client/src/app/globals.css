@@ -38,8 +38,74 @@ body {
 button,
 input,
 select,
-textarea {
+textarea,
+a {
   font: inherit;
+}
+
+button {
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease, opacity 180ms ease;
+}
+
+button:hover:not(:disabled),
+a:hover {
+  transform: translateY(-1px);
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+}
+
+.premium-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(10, 16, 30, 0.96));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 20px 50px -22px rgba(14, 116, 144, 0.38);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.premium-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(125, 211, 252, 0.35);
+  box-shadow: 0 22px 50px -20px rgba(56, 189, 248, 0.2);
+}
+
+.premium-button {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 28px -18px rgba(59, 130, 246, 0.8);
+}
+
+.premium-button:hover {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 18px 30px -18px rgba(96, 165, 250, 0.9);
+}
+
+.premium-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+  transform: translateX(-120%);
+  transition: transform 260ms ease;
+}
+
+.premium-button:hover::after {
+  transform: translateX(120%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 img {

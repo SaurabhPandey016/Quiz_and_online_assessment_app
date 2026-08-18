@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { apiClient } from '@/lib/api-client';
+import CreateSuccessAnimation from '@/components/create-success-animation';
 
 interface QuizOption {
   id: string;
@@ -30,6 +31,7 @@ export default function AdminQuestionsPage() {
   const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [createdMessage, setCreatedMessage] = useState('');
   const [form, setForm] = useState<QuestionPayload>({
     quizId: '',
     questionText: '',
@@ -116,6 +118,7 @@ export default function AdminQuestionsPage() {
         difficulty: 'MEDIUM',
         options: [{ optionText: '', isCorrect: false }, { optionText: '', isCorrect: false }],
       }));
+      setCreatedMessage('Question created successfully');
       setError('');
     } catch (err: any) {
       setError(err.message || 'Unable to save question.');
@@ -259,12 +262,13 @@ export default function AdminQuestionsPage() {
             <button
               type="button"
               onClick={submitQuestion}
-              className="rounded-3xl bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
+              className="cursor-pointer rounded-3xl bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
             >
               Save question
             </button>
           </div>
         </div>
+        {createdMessage && <CreateSuccessAnimation message={createdMessage} />}
       </div>
 
       <div className="rounded-4xl border border-slate-800 bg-slate-950/95 p-6 shadow-xl shadow-slate-950/20">

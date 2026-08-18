@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { apiClient } from '@/lib/api-client';
+import CreateSuccessAnimation from '@/components/create-success-animation';
 
 interface UserRecord {
   id: string;
@@ -18,6 +19,7 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [creating, setCreating] = useState(false);
+  const [createdMessage, setCreatedMessage] = useState('');
   const [formState, setFormState] = useState({
     name: '',
     email: '',
@@ -44,6 +46,8 @@ export default function AdminUsersPage() {
       const res = await apiClient.post('/admin/users', formState);
       setUsers((prev) => [res.data.data.user, ...prev]);
       setFormState({ name: '', email: '', password: '', role: 'USER' });
+      setCreatedMessage(`User “${res.data.data.user.name}” created`);
+      setError('');
     } catch (err: any) {
       setError(err.message || 'Unable to create user account.');
     } finally {
@@ -127,11 +131,12 @@ export default function AdminUsersPage() {
           <button
             type="submit"
             disabled={creating}
-            className="rounded-2xl bg-linear-to-r from-sky-500 to-violet-500 px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-950 transition hover:brightness-110 disabled:opacity-60"
+            className="cursor-pointer rounded-2xl bg-linear-to-r from-sky-500 to-violet-500 px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-950 transition hover:brightness-110 disabled:opacity-60"
           >
             {creating ? 'Saving...' : 'Create'}
           </button>
         </form>
+        {createdMessage && <CreateSuccessAnimation message={createdMessage} />}
       </div>
 
       <div className="overflow-x-auto rounded-4xl border border-slate-800 bg-slate-950/95 shadow-xl shadow-slate-950/20">

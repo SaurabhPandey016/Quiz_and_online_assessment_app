@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { apiClient } from '@/lib/api-client';
+import CreateSuccessAnimation from '@/components/create-success-animation';
 
 interface CategoryOption {
   id: string;
@@ -36,6 +37,7 @@ export default function AdminQuizzesPage() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [createdMessage, setCreatedMessage] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -65,6 +67,7 @@ export default function AdminQuizzesPage() {
       const res = await apiClient.post('/admin/quizzes', form);
       setQuizzes((prev) => [res.data.data.quiz, ...prev]);
       setForm((prev) => ({ ...prev, title: '', description: '' }));
+      setCreatedMessage(`Quiz “${res.data.data.quiz.title}” created`);
       setError('');
     } catch (err: any) {
       setError(err.message || 'Unable to create quiz.');
@@ -210,12 +213,13 @@ export default function AdminQuizzesPage() {
             </div>
             <button
               onClick={createQuiz}
-              className="rounded-3xl bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
+              className="cursor-pointer rounded-3xl bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
             >
               Create quiz
             </button>
           </div>
         </div>
+        {createdMessage && <CreateSuccessAnimation message={createdMessage} />}
       </div>
 
       <div className="rounded-4xl border border-slate-800 bg-slate-950/95 p-6 shadow-xl shadow-slate-950/20">

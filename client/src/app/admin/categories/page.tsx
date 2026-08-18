@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { apiClient } from '@/lib/api-client';
+import CreateSuccessAnimation from '@/components/create-success-animation';
 
 interface Category {
   id: string;
@@ -15,6 +16,7 @@ export default function AdminCategoriesPage() {
   const [newCategory, setNewCategory] = useState({ name: '', description: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [createdMessage, setCreatedMessage] = useState('');
 
   useEffect(() => {
     apiClient
@@ -25,10 +27,17 @@ export default function AdminCategoriesPage() {
   }, []);
 
   const addCategory = async () => {
+    if (!newCategory.name.trim()) {
+      setError('Category name is required.');
+      return;
+    }
+
     try {
       const res = await apiClient.post('/admin/categories', newCategory);
       setCategories((prev) => [...prev, res.data.data.category]);
       setNewCategory({ name: '', description: '' });
+      setCreatedMessage(`Category “${res.data.data.category.name}” created`);
+      setError('');
     } catch (err: any) {
       setError(err.message || 'Unable to create category.');
     }
@@ -88,11 +97,12 @@ export default function AdminCategoriesPage() {
           />
           <button
             onClick={addCategory}
-            className="rounded-3xl bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
+            className="cursor-pointer rounded-3xl bg-gradient-to-r from-sky-500 to-violet-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110"
           >
             Add Category
           </button>
         </div>
+        {createdMessage && <CreateSuccessAnimation message={createdMessage} />}
       </div>
 
       <div className="overflow-x-auto rounded-4xl border border-slate-800 bg-slate-950/95 shadow-xl shadow-slate-950/20">

@@ -1,13 +1,21 @@
 import axios from 'axios';
 
-const DEFAULT_API_URL =
-    process.env.NEXT_PUBLIC_API_URL ||
-    (process.env.NODE_ENV === 'production'
-        ? 'https://quiz-and-online-assessment-app.onrender.com/api/v1'
-        : 'http://localhost:10000/api/v1');
+const RENDER_API_URL = 'https://quiz-and-online-assessment-app.onrender.com/api/v1';
+const LOCAL_API_URL = 'http://localhost:10000/api/v1';
+
+const getApiBaseUrl = () => {
+    if (typeof window !== 'undefined') {
+        const host = window.location.hostname;
+        if (host === 'localhost' || host === '127.0.0.1') {
+            return LOCAL_API_URL;
+        }
+    }
+
+    return process.env.NEXT_PUBLIC_API_URL || RENDER_API_URL;
+};
 
 export const apiClient = axios.create({
-    baseURL: DEFAULT_API_URL,
+    baseURL: getApiBaseUrl(),
     timeout: 15000,
     headers: {
         'Content-Type': 'application/json',
@@ -51,7 +59,7 @@ apiClient.interceptors.response.use(
 
 export const checkApiHealth = async (): Promise<boolean> => {
     try {
-        const response = await axios.get(`${DEFAULT_API_URL}/health`, {
+        const response = await axios.get(`${getApiBaseUrl()}/health`, {
             timeout: 8000,
             withCredentials: true,
         });
